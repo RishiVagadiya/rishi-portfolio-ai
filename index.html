@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rishi Vagadiya Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      max-width: 100vw;
+      font-size: 110%; 
+      overflow-x: hidden;
+    }
+
+    body {
+      background: linear-gradient(135deg, #943c97, #554db4, #60609e);
+      color: rgb(201, 50, 193);
+      overflow-x: hidden;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+    }
+
+    .logo {
+      font-size: 24px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .menu-btn {
+      font-size: 20px;
+      background: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .main {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .main h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      color: #d400ff;
+      text-shadow: 0 0 10px #d400ff;
+    }
+
+    .main p {
+      font-size: 23px;
+      max-width: 600px;
+      color: #ccc;
+    }
+
+    .section {
+      padding: 80px 20px;
+      text-align: center;
+    }
+
+    .project-btn {
+      background: #d400ff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 20px;
+    }
+
+    .project-btn:hover {
+      background: #9b00b8;
+    }
+
+    .project-btn.secondary {
+      background: transparent;
+      border: 2px solid #d400ff;
+      margin: 0 10px;
+    }
+
+    .project-btn.secondary:hover {
+      background: #d400ff;
+    }
+
+    .projects-title {
+      background: linear-gradient(45deg, #ffffff, #00d4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 2.5em;
+      margin-bottom: 15px;
+    }
+
+    .projects-subtitle {
+      color: #ccc;
+      font-size: 1.2em;
+      margin-bottom: 50px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto 50px auto;
+    }
+
+    .project-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      border: 1px solid rgba(212, 0, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+      border-color: #d400ff;
+      box-shadow: 0 10px 30px rgba(212, 0, 255, 0.3);
+    }
+
+    .project-image {
+      height: 200px;
+      overflow: hidden;
+    }
+
+    .project-image-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .crowwed-color { background: linear-gradient(45deg, #ff6b35, #3498db); }
+    .zombie-game { background: linear-gradient(45deg, #2c3e50, #34495e); }
+    .ar-experience { background: linear-gradient(45deg, #1a1a1a, #2d2d2d); }
+
+    .image-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 80%;
+      height: 60%;
+    }
+
+    .blue-figure {
+      width: 50px; height: 70px;
+      background: #3498db;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: relative;
+      transform: rotate(-15deg);
+    }
+    .blue-figure::before {
+      content: '';
+      position: absolute;
+      top: -8px; left: 50%;
+      transform: translateX(-50%);
+      width: 18px; height: 25px;
+      background: #3498db;
+      border-radius: 8px;
+    }
+
+    .red-figure {
+      width: 45px; height: 65px;
+      background: #e74c3c;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: relative;
+      transform: rotate(15deg);
+    }
+    .red-figure::before {
+      content: '';
+      position: absolute;
+      top: -8px; left: 50%;
+      transform: translateX(-50%);
+      width: 16px; height: 22px;
+      background: #e74c3c;
+      border-radius: 8px;
+    }
+
+    .zombie-silhouette {
+      width: 80px; height: 80px;
+      background: #95a5a6;
+      border-radius: 50%;
+      position: relative;
+    }
+    .zombie-silhouette::before {
+      content: '';
+      position: absolute;
+      top: -20px; left: 50%;
+      transform: translateX(-50%);
+      width: 100px; height: 40px;
+      background: #95a5a6;
+      border-radius: 20px;
+      clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+    }
+
+    .coming-soon { color: #ccc; font-size: 1.5em; font-weight: bold; }
+
+    .project-content { padding: 25px; }
+
+    .project-title { color: #d400ff; font-size: 1.8em; margin-bottom: 15px; }
+
+    .project-description { color: #ccc; line-height: 1.6; margin-bottom: 20px; font-size: 1em; }
+
+    .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ccc;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 0.9em;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .play-game-btn {
+      background: #d400ff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    .play-game-btn:hover { background: #9b00b8; transform: translateY(-2px); }
+    .play-game-btn.disabled { background: #666; cursor: not-allowed; }
+    .play-game-btn.disabled:hover { background: #666; transform: none; }
+
+    .project-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 30px;
+    }
+
+    .footer {
+      background: rgba(0, 0, 0, 0.8);
+      border-top: 1px solid rgba(212, 0, 255, 0.3);
+      margin-top: 80px;
+      padding: 40px 0 20px 0;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .footer-section h3 { color: #d400ff; font-size: 1.5em; margin-bottom: 15px; }
+    .footer-section h4 { color: #00d4ff; font-size: 1.2em; margin-bottom: 15px; }
+    .footer-section p { color: #ccc; line-height: 1.6; margin-bottom: 8px; }
+    .footer-section ul { list-style: none; padding: 0; }
+    .footer-section ul li { margin-bottom: 8px; }
+    .footer-section ul li a { color: #ccc; text-decoration: none; transition: color 0.3s ease; }
+    .footer-section ul li a:hover { color: #d400ff; }
+
+    .contact-link {
+      color: #ccc;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid transparent;
+    }
+    .contact-link:hover { color: #d400ff; border-bottom: 1px solid #d400ff; }
+
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 30px; padding-top: 20px; text-align: center; }
+    .footer-bottom p { color: #999; font-size: 0.9em; }
+
+    @media (max-width: 768px) {
+      .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
+      .footer-section { padding: 0 20px; }
+    }
+
+    .skills-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .skills-left { display: flex; flex-direction: column; gap: 30px; }
+
+    .role-card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(212, 0, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+    .role-card:hover { background: rgba(255,255,255,0.15); border-color: #d400ff; transform: translateY(-5px); }
+    .role-title { margin-bottom: 20px; font-size: 1.8em; font-weight: bold; }
+    .role-title.unity { background: linear-gradient(45deg, #d400ff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .role-title.graphics { color: #00d4ff; }
+    .role-card p { color: #ccc; line-height: 1.8; font-size: 1.1em; }
+
+    .skills-right { display: flex; flex-direction: column; gap: 40px; }
+    .technical-skills h3, .languages-tools h3 { color: white; margin-bottom: 25px; font-size: 1.5em; }
+    .languages-tools h3 { color: #00d4ff; }
+
+    .skill-bars { display: flex; flex-direction: column; gap: 20px; }
+    .skill-bar { display: flex; align-items: center; gap: 15px; }
+    .skill-name { min-width: 120px; color: #ccc; font-size: 1em; }
+    .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #d400ff, #00d4ff); border-radius: 4px; transition: width 2s ease; }
+    .skill-percentage { min-width: 40px; color: #ccc; font-size: 0.9em; text-align: right; }
+
+    .tools-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tool-tag {
+      background: rgba(255,255,255,0.1);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+    .tool-tag:hover { background: rgba(212,0,255,0.3); border-color: #d400ff; transform: translateY(-2px); }
+
+    @media (max-width: 768px) {
+      .skills-container { grid-template-columns: 1fr; gap: 30px; }
+      .skill-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .skill-name { min-width: auto; }
+      .progress-bar { width: 100%; }
+      .skill-percentage { min-width: auto; text-align: left; }
+    }
+
+    .contact-info {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 10px;
+      margin: 30px 0;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .contact-info p { margin: 15px 0; font-size: 1.1em; color: #ccc; }
+
+    .about-content {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 50px;
+      max-width: 1000px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .about-text p { margin-bottom: 20px; line-height: 1.5; color: #ccc; font-size: 23px; }
+
+    .about-stats { display: flex; flex-direction: column; gap: 30px; }
+
+    .stat-item {
+      text-align: center;
+      padding: 20px;
+      background: rgba(5, 4, 5, 0.925);
+      border-radius: 10px;
+      border: 1px solid rgba(212, 0, 255, 0);
+      transition: all 0.3s ease;
+    }
+    .stat-item:hover { background: rgba(255,255,255,0.15); border-color: #d400ff; transform: translateY(-5px); }
+    .stat-item h3 { font-size: 2.5em; color: #d400ff; margin-bottom: 10px; }
+    .stat-item p { color: #ccc; font-size: 1em; }
+
+    @media (max-width: 768px) {
+      .about-content { grid-template-columns: 1fr; gap: 30px; }
+      .about-stats { flex-direction: row; justify-content: space-around; }
+      .stat-item { flex: 1; padding: 15px; }
+      .stat-item h3 { font-size: 2em; }
+    }
+
+    #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; }
+
+    .header-controls { display: flex; align-items: center; gap: 15px; }
+
+    .theme-toggle {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #d400ff;
+      color: #d400ff;
+      padding: 8px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+      width: 45px; height: 45px;
+      display: flex; align-items: center; justify-content: center;
+      user-select: none;
+      position: relative;
+      z-index: 1000;
+    }
+    .theme-toggle:hover { background: #d400ff; color: white; transform: scale(1.1); box-shadow: 0 0 15px #d400ff; }
+    .theme-toggle:active { transform: scale(0.95); background: #d400ff; color: white; }
+
+    body.dark-mode { background: #34073f !important; color: white; }
+    body.dark-mode header { background: rgba(0,0,0,0.4); }
+    body.dark-mode .project-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+
+    body.light-mode { background: #ffffffab !important; color: #333; }
+    body.light-mode header { background: rgba(213,193,218,0.9); backdrop-filter: blur(10px); }
+    body.light-mode .logo { color: #333; }
+    body.light-mode .menu-btn { border: 1px solid #333; color: #333; }
+    body.light-mode .main h1 { color: #d400ff81; text-shadow: 0 0 10px #d400ff; }
+    body.light-mode .main p { color: #555; }
+    body.light-mode .projects-title { background: linear-gradient(45deg, #333333, #a5a3a5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    body.light-mode .projects-subtitle { color: #666; }
+    body.light-mode .project-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    body.light-mode .project-card:hover { background: rgba(255,255,255,1); box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-color: #d400ff; }
+    body.light-mode .project-title { color: #333; }
+    body.light-mode .project-description { color: #666; }
+    body.light-mode .tag { background: rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.2); }
+    body.light-mode .skill-name { color: #333; }
+    body.light-mode .skill-percentage { color: #333; }
+    body.light-mode .tool-tag { background: rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.2); }
+    body.light-mode .tool-tag:hover { background: rgba(212,0,255,0.2); border-color: #d400ff; }
+    body.light-mode .role-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    body.light-mode .role-card p { color: #666; }
+    body.light-mode .technical-skills h3 { color: #333; }
+    body.light-mode .contact-info { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); }
+    body.light-mode .contact-info p { color: #333; }
+    body.light-mode .contact-link { color: #333; }
+    body.light-mode .contact-link:hover { color: #d400ff; }
+    body.light-mode .footer { background: rgba(255,255,255,0.9); color: #333; }
+    body.light-mode .footer h3 { color: #d400ff; }
+    body.light-mode .footer h4 { color: #00d4ff; }
+    body.light-mode .footer p { color: #666; }
+    body.light-mode .footer a { color: #d400ff; }
+    body.light-mode .stat-item { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    body.light-mode .stat-item p { color: #666; }
+    body.light-mode .about-text p { color: #666; }
+    body.light-mode .theme-toggle { border: 2px solid #333; color: #333; background: rgba(255,255,255,0.1); }
+    body.light-mode .theme-toggle:hover { background: #333; color: white; box-shadow: 0 0 15px #333; }
+
+    .theme-toggle .theme-icon { transition: transform 0.3s ease; }
+    .theme-toggle:hover .theme-icon { transform: rotate(180deg); }
+
+    body, header, .project-card, .skill-bar, .contact-info, .footer {
+      transition: all 0.3s ease;
+    }
+
+    /* ============================================
+       AI CHATBOT WIDGET — Matches portfolio theme
+       ============================================ */
+    #rishi-chatbot * { box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+
+    #chat-toggle {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d400ff, #554db4);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 0 rgba(212, 0, 255, 0.6);
+      z-index: 9999;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: chat-pulse 2.5s infinite;
+    }
+    @keyframes chat-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(212, 0, 255, 0.6); }
+      70%  { box-shadow: 0 0 0 16px rgba(212, 0, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(212, 0, 255, 0); }
+    }
+    #chat-toggle:hover { transform: scale(1.12); animation: none; box-shadow: 0 8px 30px rgba(212, 0, 255, 0.6); }
+    #chat-toggle.open { animation: none; transform: rotate(45deg); box-shadow: 0 8px 30px rgba(212, 0, 255, 0.4); }
+
+    #chat-toggle svg { width: 26px; height: 26px; fill: white; }
+
+    /* Notification badge */
+    #chat-badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 14px; height: 14px;
+      background: #ff4757;
+      border-radius: 50%;
+      border: 2px solid #0f0f18;
+      font-size: 8px;
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+    }
+
+    #chat-window {
+      position: fixed;
+      /* Desktop: sits above the toggle button with safe spacing */
+      bottom: 98px;
+      right: 28px;
+      width: 360px;
+      /* Use dvh so it never overflows on mobile browsers */
+      max-height: min(520px, calc(100dvh - 120px));
+      height: min(520px, calc(100dvh - 120px));
+      background: #0f0f18;
+      border-radius: 22px;
+      border: 1px solid rgba(212, 0, 255, 0.25);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.7), 0 0 40px rgba(212,0,255,0.1);
+      display: flex;
+      flex-direction: column;
+      z-index: 9998;
+      overflow: hidden;
+      transform: scale(0.8) translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #chat-window.open {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Chat Header */
+    #chat-header {
+      padding: 16px 18px;
+      background: linear-gradient(135deg, #d400ff22, #554db422);
+      border-bottom: 1px solid rgba(212, 0, 255, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #chat-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d400ff, #554db4);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(212,0,255,0.5);
+    }
+    #chat-header-info { flex: 1; }
+    #chat-header-info h4 {
+      margin: 0; color: white;
+      font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
+    }
+    #chat-header-info p {
+      margin: 2px 0 0; color: rgba(255,255,255,0.55);
+      font-size: 11px;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      background: #2ed573;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+      box-shadow: 0 0 5px #2ed573;
+      animation: blink-dot 3s infinite;
+    }
+    @keyframes blink-dot {
+      0%, 90%, 100% { opacity: 1; }
+      95% { opacity: 0.3; }
+    }
+
+    /* Messages area */
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(212,0,255,0.2) transparent;
+    }
+    #chat-messages::-webkit-scrollbar { width: 4px; }
+    #chat-messages::-webkit-scrollbar-thumb { background: rgba(212,0,255,0.2); border-radius: 4px; }
+
+    .msg {
+      max-width: 84%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 12.5px;
+      line-height: 1.55;
+      animation: msgSlide 0.28s cubic-bezier(0.34,1.3,0.64,1);
+      word-break: break-word;
+    }
+    @keyframes msgSlide {
+      from { opacity: 0; transform: translateY(12px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .msg.bot {
+      background: rgba(255,255,255,0.07);
+      color: #ddd;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .msg.user {
+      background: linear-gradient(135deg, #d400ff, #554db4);
+      color: white;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+      box-shadow: 0 4px 15px rgba(212,0,255,0.3);
+    }
+    .msg-time {
+      font-size: 10px;
+      opacity: 0.4;
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* Typing indicator */
+    .typing-bubble {
+      display: flex; gap: 4px; align-items: center;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+      animation: msgSlide 0.28s ease;
+    }
+    .typing-bubble span {
+      width: 6px; height: 6px;
+      background: rgba(212,0,255,0.7);
+      border-radius: 50%;
+      animation: bounce-dot 1.3s ease infinite;
+    }
+    .typing-bubble span:nth-child(2) { animation-delay: 0.18s; }
+    .typing-bubble span:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes bounce-dot {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); background: #d400ff; }
+    }
+
+    /* Quick replies */
+    #quick-replies {
+      padding: 4px 14px 8px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .q-btn {
+      background: rgba(212,0,255,0.1);
+      border: 1px solid rgba(212,0,255,0.3);
+      color: #e080ff;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .q-btn:hover { background: rgba(212,0,255,0.25); border-color: #d400ff; color: white; }
+
+    /* Input area */
+    #chat-input-area {
+      padding: 10px 12px 12px;
+      border-top: 1px solid rgba(212,0,255,0.15);
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+    #chat-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(212,0,255,0.2);
+      border-radius: 14px;
+      padding: 9px 13px;
+      color: #eee;
+      font-size: 12.5px;
+      resize: none;
+      outline: none;
+      max-height: 80px;
+      min-height: 38px;
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s;
+    }
+    #chat-input:focus { border-color: rgba(212,0,255,0.55); }
+    #chat-input::placeholder { color: rgba(255,255,255,0.22); }
+
+    #chat-send {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #d400ff, #554db4);
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, opacity 0.2s;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(212,0,255,0.4);
+    }
+    #chat-send:hover { transform: scale(1.1); }
+    #chat-send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+    #chat-send svg { width: 16px; height: 16px; fill: white; }
+
+    /* Light mode chatbot adjustments */
+    body.light-mode #chat-window {
+      background: #fafafa;
+      border-color: rgba(212,0,255,0.3);
+    }
+    body.light-mode .msg.bot {
+      background: rgba(0,0,0,0.06);
+      color: #333;
+      border-color: rgba(0,0,0,0.08);
+    }
+    body.light-mode #chat-input {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(212,0,255,0.25);
+      color: #333;
+    }
+    body.light-mode #chat-header-info h4 { color: #222; }
+    body.light-mode #chat-header-info p { color: rgba(0,0,0,0.45); }
+    body.light-mode #chat-messages { scrollbar-color: rgba(212,0,255,0.15) transparent; }
+    body.light-mode #chat-badge { border-color: #fafafa; }
+
+    /* --- Tablet landscape / small desktop (768px - 1024px) --- */
+    @media (max-width: 1024px) {
+      #chat-window {
+        width: 340px;
+        right: 22px;
+        bottom: 94px;
+      }
+      #chat-toggle {
+        bottom: 24px;
+        right: 22px;
+      }
+    }
+
+    /* --- Tablet portrait (480px - 768px) --- */
+    @media (max-width: 768px) {
+      #chat-window {
+        /* On tablets, centre-right, leave room at edges */
+        width: min(340px, calc(100vw - 32px));
+        right: 16px;
+        bottom: 90px;
+        max-height: min(460px, calc(100dvh - 110px));
+        height: min(460px, calc(100dvh - 110px));
+        border-radius: 18px;
+      }
+      #chat-toggle {
+        bottom: 20px;
+        right: 16px;
+        width: 54px;
+        height: 54px;
+      }
+    }
+
+    /* --- Mobile (max 480px) --- */
+    @media (max-width: 480px) {
+      #chat-window {
+        /* Full width with small side margins, anchored to bottom */
+        width: calc(100vw - 24px);
+        left: 12px;
+        right: 12px;
+        bottom: 82px;
+        /* Leave header height + toggle + safe area at top/bottom */
+        max-height: calc(100dvh - 100px);
+        height: calc(100dvh - 100px);
+        border-radius: 16px;
+        transform-origin: bottom center;
+      }
+      #chat-toggle {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+      }
+      /* Slightly smaller fonts on tiny screens */
+      .msg { font-size: 12px; }
+      .q-btn { font-size: 10.5px; padding: 5px 10px; }
+      #chat-input { font-size: 12px; }
+      #chat-header-info h4 { font-size: 12.5px; }
+    }
+
+    /* --- Very small phones (max 360px) --- */
+    @media (max-width: 360px) {
+      #chat-window {
+        width: calc(100vw - 16px);
+        left: 8px;
+        right: 8px;
+        bottom: 78px;
+        max-height: calc(100dvh - 96px);
+        height: calc(100dvh - 96px);
+      }
+      #chat-toggle {
+        bottom: 14px;
+        right: 14px;
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    /* --- Safe area insets for iPhone notch / home bar --- */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      #chat-toggle {
+        bottom: calc(28px + env(safe-area-inset-bottom));
+      }
+      #chat-window {
+        bottom: calc(98px + env(safe-area-inset-bottom));
+      }
+      @media (max-width: 480px) {
+        #chat-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
+        #chat-window { bottom: calc(82px + env(safe-area-inset-bottom)); }
+      }
+    }
+    /* ============================================ */
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <header>
+    <div class="logo" onclick="location.reload()">R🎮V</div>
+    <div class="header-controls">
+      <button class="theme-toggle" id="theme-toggle">
+        <span class="theme-icon">🌙</span>
+      </button>
+      <button class="menu-btn">Menu</button>
+    </div>
+  </header>
+
+  <section class="main" id="home">
+    <h1>Rishi Vagadiya</h1>
+    <p>Unity 3D Developer & Game Development Professional<br>With 1 year of experience creating immersive gaming experiences</p>
+  </section>
+
+  <section class="section" id="about">
+    <h2>About Me</h2>
+    <div class="about-content">
+      <div class="about-text">
+        <p>Hello! I'm Rishi Vagadiya, a passionate Unity 3D Game Developer with a year of professional experience in creating immersive gaming experiences. I specialize in developing engaging games with efficient code and stunning visuals.</p>
+        <p>My expertise includes Unity 3D development, C# programming, graphics programming, and AR/VR development. I'm constantly learning and exploring new technologies to push the boundaries of what's possible in game development.</p>
+        <p>When I'm not coding, you can find me experimenting with new game mechanics, exploring 3D modeling, or contributing to open-source game development projects.</p>
+      </div>
+      <div class="about-stats">
+        <div class="stat-item"><h3>1+</h3><p>Years Experience</p></div>
+        <div class="stat-item"><h3>10+</h3><p>Projects Completed</p></div>
+        <div class="stat-item"><h3>5+</h3><p>Technologies</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <h2 class="projects-title">My Projects</h2>
+    <p class="projects-subtitle">Here are some of the game development projects I've worked on using Unity 3D and C#</p>
+    
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-image">
+          <div class="project-image-placeholder crowwed-color">
+            <div class="image-content">
+              <div class="blue-figure"></div>
+              <div class="red-figure"></div>
+            </div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title">Crowwed Color</h3>
+          <p class="project-description">A 3D running game where players solve math questions while running (e.g., 'What is 2+2?'). The game consists of 5 levels, all created within a single scene using Empty GameObjects. Unity Ads are displayed after each level completion.</p>
+          <div class="project-tags">
+            <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">AI</span><span class="tag">Physics</span>
+          </div>
+          <button class="play-game-btn" data-url="https://drive.google.com/file/d/1ePns9H9h8htrAnfnYsxh1q-Z_slxIfbn/view">Play Game</button>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-image">
+          <div class="project-image-placeholder zombie-game">
+            <div class="zombie-silhouette"></div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title">Zombie Killing Game</h3>
+          <p class="project-description">A 3D action game where the player attacks enemies. When the player gets close to enemies, they start chasing and attacking. Designed the complete environment and implemented enemy AI behavior.</p>
+          <div class="project-tags">
+            <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">AI Navigation</span><span class="tag">3D</span>
+          </div>
+          <button class="play-game-btn" data-url="https://drive.google.com/file/d/13oiid8qWvXb2e8iPC3sSCjXkrtbv-KPP/view?usp=drive_link">Play Game</button>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-image">
+          <div class="project-image-placeholder ar-experience">
+            <div class="coming-soon">Coming Soon</div>
+          </div>
+        </div>
+        <div class="project-content">
+          <h3 class="project-title">AR Experience</h3>
+          <p class="project-description">An augmented reality application that transforms your surroundings into an interactive experience.</p>
+          <div class="project-tags">
+            <span class="tag">Unity 3D</span><span class="tag">AR</span><span class="tag">Mobile</span><span class="tag">C#</span>
+          </div>
+          <button class="play-game-btn disabled">Coming Soon</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-buttons">
+      <button class="project-btn secondary" id="contact-btn">Contact Me</button>
+      <button class="project-btn secondary" id="skills-btn">View Skills</button>
+    </div>
+  </section>
+
+  <section class="section" id="skills" style="display: none;">
+    <h2>Skills & Technologies</h2>
+    <div class="skills-container">
+      <div class="skills-left">
+        <div class="role-card">
+          <h3 class="role-title unity">Unity 3D Game Developer</h3>
+          <p>I'm a passionate game developer with expertise in Unity 3D and C# programming. With a year of professional experience, I've focused on creating engaging gaming experiences with efficient code and stunning visuals.</p>
+        </div>
+        <div class="role-card">
+          <h3 class="role-title graphics">Graphics Programmer</h3>
+          <p>As a graphics programmer, I specialize in optimizing rendering pipelines and implementing visual effects that enhance gameplay while maintaining performance. I'm constantly exploring new techniques to push the boundaries of what's possible.</p>
+        </div>
+      </div>
+      <div class="skills-right">
+        <div class="technical-skills">
+          <h3>Technical Skills</h3>
+          <div class="skill-bars">
+            <div class="skill-bar"><span class="skill-name">Unity 3D</span><div class="progress-bar"><div class="progress-fill" style="width: 90%"></div></div><span class="skill-percentage">90%</span></div>
+            <div class="skill-bar"><span class="skill-name">C# Scripting</span><div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div><span class="skill-percentage">85%</span></div>
+            <div class="skill-bar"><span class="skill-name">Game Development</span><div class="progress-bar"><div class="progress-fill" style="width: 80%"></div></div><span class="skill-percentage">80%</span></div>
+            <div class="skill-bar"><span class="skill-name">Graphics Programming</span><div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div><span class="skill-percentage">75%</span></div>
+            <div class="skill-bar"><span class="skill-name">AR Development</span><div class="progress-bar"><div class="progress-fill" style="width: 65%"></div></div><span class="skill-percentage">65%</span></div>
+            <div class="skill-bar"><span class="skill-name">UI/UX Design</span><div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div><span class="skill-percentage">60%</span></div>
+          </div>
+        </div>
+        <div class="languages-tools">
+          <h3>Languages & Tools</h3>
+          <div class="tools-grid">
+            <span class="tool-tag">Unity</span><span class="tool-tag">C#</span><span class="tool-tag">Visual Studio</span>
+            <span class="tool-tag">Git</span><span class="tool-tag">Blender</span><span class="tool-tag">Shader Programming</span><span class="tool-tag">AR/VR</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="project-btn" onclick="openResume()">Resume</button>
+  </section>
+
+  <section class="section" id="contact" style="display: none;">
+    <h2>Get In Touch</h2>
+    <p>Let's work together on your next project!</p>
+    <div class="contact-info">
+      <p>📧 Email: <a href="mailto:Rishivagadiya613@gmail.com" class="contact-link">Rishivagadiya613@gmail.com</a></p>
+      <p>📱 Phone: <a href="tel:+916352294215" class="contact-link">+91 6352294215</a></p>
+      <p>📍 Location: Available for remote work and on site work</p>
+    </div>
+    <button class="project-btn" onclick="openResume()">Resume</button>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Rishi Vagadiya</h3>
+        <p>Unity 3D Game Developer & Graphics Programmer</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home" onclick="navigateToSection('home')">Home</a></li>
+          <li><a href="#about" onclick="navigateToSection('about')">About</a></li>
+          <li><a href="#projects" onclick="navigateToSection('projects')">Projects</a></li>
+          <li><a href="#contact" onclick="navigateToSection('contact')">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contact Info</h4>
+        <p>📧 <a href="mailto:Rishivagadiya613@gmail.com" class="contact-link">Rishivagadiya613@gmail.com</a></p>
+        <p>📱 <a href="tel:+916352294215" class="contact-link">+91 6352294215</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 All Rights Reserved. Copyright by Rishi Vagadiya</p>
+    </div>
+  </footer>
+
+  <!-- ==============================
+       AI CHATBOT WIDGET
+       ============================== -->
+  <div id="rishi-chatbot">
+    <!-- Toggle Button -->
+    <button id="chat-toggle" aria-label="Open AI Chat Assistant">
+      <span id="chat-badge">1</span>
+      <!-- Chat icon -->
+      <svg id="icon-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chat-window" role="dialog" aria-label="Rishi's AI Assistant">
+      <!-- Header -->
+      <div id="chat-header">
+        <div id="chat-avatar">🎮</div>
+        <div id="chat-header-info">
+          <h4>Rishi's AI Assistant</h4>
+          <p><span class="status-dot"></span>Online — Ask me anything!</p>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div id="chat-messages"></div>
+
+      <!-- Quick replies -->
+      <div id="quick-replies">
+        <button class="q-btn" onclick="sendQuick('What are your skills?')">💡 Skills</button>
+        <button class="q-btn" onclick="sendQuick('Show me your projects')">🎮 Projects</button>
+        <button class="q-btn" onclick="sendQuick('Are you available to hire?')">💼 Hire?</button>
+        <button class="q-btn" onclick="sendQuick('How can I contact you?')">📬 Contact</button>
+      </div>
+
+      <!-- Input -->
+      <div id="chat-input-area">
+        <textarea id="chat-input" placeholder="Ask about Rishi..." rows="1"
+          onkeydown="chatHandleKey(event)" oninput="chatAutoResize(this)"></textarea>
+        <button id="chat-send" onclick="chatSend()" aria-label="Send message">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- ============================== -->
+
+  <!-- Particle.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+
+  <!-- Theme Toggle Script -->
+  <script>
+    const toggleButton = document.getElementById('theme-toggle');
+    const themeIcon = toggleButton.querySelector('.theme-icon');
+    const body = document.body;
+
+    function enableDarkMode() {
+      body.classList.add('dark-mode');
+      body.classList.remove('light-mode');
+      themeIcon.textContent = '🔆';
+      localStorage.setItem('theme', 'dark');
+    }
+    function enableLightMode() {
+      body.classList.add('light-mode');
+      body.classList.remove('dark-mode');
+      themeIcon.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    }
+    toggleButton.addEventListener('click', () => {
+      body.classList.contains('dark-mode') ? enableLightMode() : enableDarkMode();
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+      localStorage.getItem('theme') === 'light' ? enableLightMode() : enableDarkMode();
+    });
+  </script>
+
+  <!-- Chatbot Script -->
+  <script>
+    // ========================================================
+    // CONFIGURATION — Update BACKEND_URL after deploying API
+    // ========================================================
+    const CHAT_BACKEND_URL = '/api/chat';
+    // ^ Deploy api/chat.js to Vercel and paste your URL above!
+    // ========================================================
+
+    let chatHistory = [];
+    let chatIsOpen = false;
+
+    const chatWindow  = document.getElementById('chat-window');
+    const chatToggle  = document.getElementById('chat-toggle');
+    const chatBadge   = document.getElementById('chat-badge');
+    const chatMsgs    = document.getElementById('chat-messages');
+
+    function toggleChat() {
+      chatIsOpen = !chatIsOpen;
+      chatWindow.classList.toggle('open', chatIsOpen);
+      chatToggle.classList.toggle('open', chatIsOpen);
+      if (chatIsOpen) {
+        chatBadge.style.display = 'none';
+        if (chatHistory.length === 0) {
+          setTimeout(() => addMsg('bot', "👋 Hi! I'm Rishi's AI assistant. I can tell you about his Unity 3D projects, C# skills, availability for hire, and more. What would you like to know?"), 300);
+        }
+        document.getElementById('chat-input').focus();
+      }
+    }
+
+    chatToggle.addEventListener('click', toggleChat);
+
+    function getTime() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function addMsg(role, text) {
+      const div = document.createElement('div');
+      div.className = `msg ${role}`;
+      div.innerHTML = `${text}<span class="msg-time">${getTime()}</span>`;
+      chatMsgs.appendChild(div);
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    function showTyping() {
+      const div = document.createElement('div');
+      div.className = 'typing-bubble';
+      div.id = 'typing-indicator';
+      div.innerHTML = '<span></span><span></span><span></span>';
+      chatMsgs.appendChild(div);
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    function removeTyping() {
+      const el = document.getElementById('typing-indicator');
+      if (el) el.remove();
+    }
+
+    function chatHandleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend(); }
+    }
+
+    function chatAutoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 80) + 'px';
+    }
+
+    function sendQuick(text) {
+      document.getElementById('chat-input').value = text;
+      chatSend();
+    }
+
+    async function chatSend() {
+      const input   = document.getElementById('chat-input');
+      const sendBtn = document.getElementById('chat-send');
+      const message = input.value.trim();
+      if (!message) return;
+
+      input.value = '';
+      input.style.height = 'auto';
+      addMsg('user', message);
+      chatHistory.push({ role: 'user', content: message });
+
+      sendBtn.disabled = true;
+      showTyping();
+
+      try {
+        const res = await fetch(CHAT_BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, history: chatHistory.slice(-8) })
+        });
+
+        const data = await res.json();
+        removeTyping();
+
+        const reply = data.reply || data.error || 'Sorry, something went wrong!';
+        addMsg('bot', reply);
+        chatHistory.push({ role: 'assistant', content: reply });
+
+      } catch (err) {
+        removeTyping();
+        addMsg('bot', '⚠️ Could not connect to AI. Please check your backend URL in the code.');
+      }
+
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
