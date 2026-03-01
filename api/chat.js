@@ -1,8 +1,4 @@
-import OpenAI from "openai";
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// api/chat.js
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -12,23 +8,33 @@ export default async function handler(req, res) {
   try {
     const { message } = req.body;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Rishi Vagadiya's AI assistant. Answer only about his skills, projects, and hiring availability.",
-        },
-        { role: "user", content: message },
-      ],
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        input: message
+      })
     });
 
-    return res.status(200).json({
-      reply: completion.choices[0].message.content,
-    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("OPENAI RESPONSE ERROR:", data);
+      return res.status(500).json({ error: "OpenAI error" });
+    }
+
+    const reply =
+      data.output?.[0]?.content?.[0]?.text ||
+      "Sorry, no response from AI.";
+
+    return res.status(200).json({ reply });
+
   } catch (err) {
-    console.error(err);
+    console.error("SERVER ERROR:", err);
     return res.status(500).json({ error: "OpenAI error" });
   }
 }
