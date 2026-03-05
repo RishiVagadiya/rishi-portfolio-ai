@@ -812,3 +812,75 @@ function testThemeToggle() {
         console.error('Theme toggle button not found!');
     }
 }
+// ================= AI CHATBOT =================
+
+const chatInput = document.getElementById("chat-input");
+const chatMessages = document.getElementById("chat-messages");
+const sendBtn = document.getElementById("send-btn");
+
+function addMessage(text, sender) {
+
+    const msg = document.createElement("div");
+
+    if (sender === "user") {
+        msg.className = "user-message";
+    } else {
+        msg.className = "bot-message";
+    }
+
+    msg.innerText = text;
+
+    chatMessages.appendChild(msg);
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function sendMessage() {
+
+    const userMessage = chatInput.value.trim();
+
+    if (!userMessage) return;
+
+    addMessage(userMessage, "user");
+
+    chatInput.value = "";
+
+    try {
+
+        const response = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: userMessage
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.reply) {
+            addMessage(data.reply, "bot");
+        } else {
+            addMessage("AI error occurred.", "bot");
+        }
+
+    } catch (error) {
+
+        console.error(error);
+        addMessage("Server error. Please try again.", "bot");
+
+    }
+}
+
+if (sendBtn) {
+    sendBtn.addEventListener("click", sendMessage);
+}
+
+if (chatInput) {
+    chatInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
+}
