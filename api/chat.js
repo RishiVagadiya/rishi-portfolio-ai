@@ -1,5 +1,3 @@
-// api/chat.js
-
 export default async function handler(req, res) {
 
   if (req.method !== "POST") {
@@ -14,16 +12,14 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://your-website.com", // optional
-        "X-Title": "Rishi Portfolio AI"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [
           {
             role: "system",
-            content: "Rishi's AI assistant. Help users learn about his Unity game development projects, C# skills, and availability."
+            content: "Rishi's AI assistant. Help visitors learn about his Unity projects."
           },
           {
             role: "user",
@@ -35,22 +31,20 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    console.log(data);   // DEBUG
+
     if (!response.ok) {
-      console.error("OPENROUTER ERROR:", data);
-      return res.status(500).json({ error: "OpenRouter error" });
+      return res.status(500).json({ error: data });
     }
 
-    const reply =
-      data.choices?.[0]?.message?.content ||
-      "Sorry, no response from AI.";
+    const reply = data.choices[0].message.content;
 
-    return res.status(200).json({ reply });
+    res.status(200).json({ reply });
 
-  } catch (err) {
+  } catch (error) {
 
-    console.error("SERVER ERROR:", err);
-    return res.status(500).json({ error: "Server error" });
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
 
   }
-
 }
