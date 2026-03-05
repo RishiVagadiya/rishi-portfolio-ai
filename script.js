@@ -859,16 +859,17 @@ async function sendMessage() {
 
         const data = await response.json();
 
-        if (data.reply) {
-            addMessage(data.reply, "bot");
-        } else {
-            addMessage("AI error occurred.", "bot");
-        }
+        console.log("AI RESPONSE:", data);   // Debug
+
+        // 👇 IMPORTANT
+        const reply = data.reply || "AI error";
+
+        addMessage(reply, "bot");
 
     } catch (error) {
 
         console.error(error);
-        addMessage("Server error. Please try again.", "bot");
+        addMessage("Server error", "bot");
 
     }
 }
