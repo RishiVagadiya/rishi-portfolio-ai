@@ -864,7 +864,7 @@ async function sendMessage() {
         // 👇 IMPORTANT
         const reply = data.reply || "AI error";
 
-        addMessage(reply, "bot");
+        addMessage(data.reply, "bot");
 
     } catch (error) {
 
