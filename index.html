@@ -492,6 +492,7 @@
     .thumb-crowwed { background: linear-gradient(135deg, #0d0020, #1a0040, #0d0020); }
     .thumb-zombie { background: linear-gradient(135deg, #001a0d, #002d1a, #001a0d); }
     .thumb-ar { background: linear-gradient(135deg, #001020, #001830, #001020); }
+    .thumb-carpark { background: linear-gradient(135deg, #0d0800, #1a1000, #0d0a00); }
 
     .thumb-overlay {
       position: absolute;
@@ -1092,8 +1093,104 @@
         </div>
       </div>
 
+      <div class="project-card reveal">
+        <div class="project-thumb thumb-carpark">
+          <canvas class="mini-canvas" data-type="carpark"></canvas>
+        </div>
+        <div class="project-body">
+          <p class="project-id">PROJECT_04 — WEBGL</p>
+          <h3 class="project-name">Car Parking</h3>
+          <p class="project-desc">A realistic 3D car parking simulation game with smooth vehicle controls, tight parking challenges, and multiple levels. Play directly in your browser!</p>
+          <div class="project-tags">
+            <span class="tag">Unity 3D</span><span class="tag">WebGL</span><span class="tag">C#</span><span class="tag">Physics</span>
+          </div>
+          <button class="play-btn" onclick="openWebGL()">▶ PLAY IN BROWSER</button>
+        </div>
+      </div>
+
     </div>
   </section>
+
+  <!-- ── WEBGL GAME MODAL ── -->
+  <div id="webgl-modal" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.97);
+    z-index: 99997;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  ">
+    <!-- Header bar -->
+    <div style="
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(0,255,247,0.2);
+      margin-bottom: 16px;
+    ">
+      <p style="font-family:'Orbitron',monospace; font-size:13px; letter-spacing:3px; color:#00fff7;">
+        🎮 CAR PARKING — WEBGL
+      </p>
+      <div style="display:flex; gap:10px;">
+        <button onclick="toggleFullscreen()" style="
+          font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px;
+          padding: 8px 16px; background: transparent;
+          border: 1px solid rgba(0,255,247,0.4); color: #00fff7;
+          cursor: pointer; transition: all 0.2s;
+        " onmouseover="this.style.background='rgba(0,255,247,0.1)'" onmouseout="this.style.background='transparent'">
+          ⛶ FULLSCREEN
+        </button>
+        <button onclick="closeWebGL()" style="
+          font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px;
+          padding: 8px 16px; background: transparent;
+          border: 1px solid rgba(255,0,100,0.5); color: #ff0066;
+          cursor: pointer; transition: all 0.2s;
+        " onmouseover="this.style.background='rgba(255,0,100,0.1)'" onmouseout="this.style.background='transparent'">
+          ✕ CLOSE
+        </button>
+      </div>
+    </div>
+
+    <!-- Game iframe container -->
+    <div id="webgl-container" style="
+      width: 100%;
+      max-width: 1200px;
+      height: calc(100vh - 120px);
+      border: 1px solid rgba(0,255,247,0.2);
+      position: relative;
+      background: #000;
+      box-shadow: 0 0 60px rgba(0,255,247,0.1);
+    ">
+      <iframe
+        id="webgl-iframe"
+        src=""
+        style="width:100%; height:100%; border:none; display:block;"
+        allowfullscreen
+        allow="autoplay; fullscreen"
+      ></iframe>
+      <!-- Loading overlay -->
+      <div id="webgl-loading" style="
+        position: absolute; top:0; left:0;
+        width:100%; height:100%;
+        background: #000;
+        display: flex; flex-direction:column;
+        align-items:center; justify-content:center;
+        z-index: 10;
+      ">
+        <p style="font-family:'Orbitron',monospace; font-size:18px; color:#00fff7; letter-spacing:4px; margin-bottom:20px;">LOADING GAME...</p>
+        <div style="width:200px; height:3px; background:rgba(0,255,247,0.1); border-radius:2px; overflow:hidden;">
+          <div id="load-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#00fff7,#bf00ff); transition:width 0.1s; border-radius:2px;"></div>
+        </div>
+        <p style="font-family:'Share Tech Mono',monospace; font-size:11px; color:rgba(0,255,247,0.4); letter-spacing:3px; margin-top:16px;">INITIALIZING UNITY WEBGL ENGINE</p>
+      </div>
+    </div>
+  </div>
 
   <!-- ── SKILLS ── -->
   <section id="skills">
@@ -1475,6 +1572,14 @@
       obj = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
     } else if (type === 'zombie') {
       obj = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
+    } else if (type === 'carpark') {
+      // Car-like shape using box geometry
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(new THREE.BoxGeometry(2, 0.5, 1), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
+      const top = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 0.9), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
+      top.position.y = 0.45;
+      group.add(body); group.add(top);
+      obj = group;
     } else {
       obj = new THREE.Mesh(new THREE.TorusKnotGeometry(0.9, 0.3, 80, 12), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.2, wireframe: true }));
     }
@@ -1618,8 +1723,71 @@
   }
 
   // ═══════════════════════════════════════
-  // MOBILE MENU
+  // WEBGL GAME MODAL
   // ═══════════════════════════════════════
+  function openWebGL() {
+    const modal = document.getElementById('webgl-modal');
+    const iframe = document.getElementById('webgl-iframe');
+    const loading = document.getElementById('webgl-loading');
+    const bar = document.getElementById('load-bar');
+
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Set the WebGL game path
+    iframe.src = './Car_Parking/index.html';
+
+    // Animate loading bar
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 8;
+      if (progress > 90) progress = 90;
+      bar.style.width = progress + '%';
+    }, 200);
+
+    // Hide loading when iframe loads
+    iframe.onload = () => {
+      clearInterval(interval);
+      bar.style.width = '100%';
+      setTimeout(() => {
+        loading.style.opacity = '0';
+        loading.style.transition = 'opacity 0.5s';
+        setTimeout(() => { loading.style.display = 'none'; }, 500);
+      }, 500);
+    };
+  }
+
+  function closeWebGL() {
+    const modal = document.getElementById('webgl-modal');
+    const iframe = document.getElementById('webgl-iframe');
+    const loading = document.getElementById('webgl-loading');
+
+    iframe.src = ''; // Stop the game
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+
+    // Reset loading for next open
+    loading.style.display = 'flex';
+    loading.style.opacity = '1';
+    document.getElementById('load-bar').style.width = '0%';
+  }
+
+  function toggleFullscreen() {
+    const container = document.getElementById('webgl-container');
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(err => console.log(err));
+    } else {
+      document.exitFullscreen();
+    }
+  }
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('webgl-modal');
+      if (modal.style.display === 'flex') closeWebGL();
+    }
+  });
   document.getElementById('menu-toggle').addEventListener('click', () => {
     const existing = document.getElementById('mobile-menu-overlay');
     if (existing) { existing.remove(); return; }
