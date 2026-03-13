@@ -524,23 +524,15 @@ function hideContact() {
 }
 
 function openResume() {
-    // Path to your resume PDF file
-    const resumePath = './Rishi vagadiya_resume .PDF';
-    console.log('Resume button clicked!'); // Debug log
-    
-    // Add loading animation
-    const buttons = document.querySelectorAll('.project-btn');
-    buttons.forEach(btn => {
-        if (btn.innerHTML === 'Resume') {
-            console.log('Found Resume button, adding loading effect...'); // Debug log
-            addLoadingEffect(btn, () => {
-                // Open PDF in new tab
-                console.log('Opening resume PDF...'); // Debug log
-                window.open(resumePath, '_blank');
-            });
-        }
-    });
+    // Create a temporary <a> tag and force download
+    const link = document.createElement('a');
+    link.href = './rishi_game_dev.pdf';
+    link.download = 'Rishi_Vagadiya_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
+
 
 // Universal loading effect function
 function addLoadingEffect(button, callback) {

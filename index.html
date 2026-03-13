@@ -3,1197 +3,1640 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rishi Vagadiya Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <title>Rishi Vagadiya — Game Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --neon-cyan: #00fff7;
+      --neon-purple: #bf00ff;
+      --neon-pink: #ff00aa;
+      --neon-green: #00ff88;
+      --dark-bg: #030308;
+      --panel-bg: rgba(0,255,247,0.03);
+      --border-glow: rgba(0,255,247,0.2);
+      --text-primary: #e8f4ff;
+      --text-dim: rgba(232,244,255,0.5);
     }
 
-    html, body {
-      max-width: 100vw;
-      font-size: 110%; 
-      overflow-x: hidden;
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      background: linear-gradient(135deg, #943c97, #554db4, #60609e);
-      color: rgb(201, 50, 193);
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      font-family: 'Rajdhani', sans-serif;
       overflow-x: hidden;
-      align-items: center;
-      justify-content: center;
+      cursor: none;
     }
 
+    /* ── CUSTOM CURSOR ── */
+    #cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 12px; height: 12px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      box-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(0,255,247,0.5);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.3s, height 0.3s;
+    }
+    body:has(a:hover) #cursor,
+    body:has(button:hover) #cursor { width: 20px; height: 20px; background: var(--neon-pink); }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring { width: 52px; height: 52px; border-color: var(--neon-pink); }
+
+    /* ── THREE.JS CANVAS ── */
+    #three-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── SCANLINE OVERLAY ── */
+    #scanlines {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.07) 2px,
+        rgba(0,0,0,0.07) 4px
+      );
+    }
+
+    /* ── VIGNETTE ── */
+    #vignette {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(3,3,8,0.8) 100%);
+    }
+
+    /* ── HEADER ── */
     header {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 999;
+      padding: 18px 40px;
+      background: linear-gradient(180deg, rgba(3,3,8,0.95) 0%, transparent 100%);
+      border-bottom: 1px solid rgba(0,255,247,0.08);
     }
 
     .logo {
-      font-size: 24px;
-      color: #fff;
+      font-family: 'Orbitron', monospace;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0,255,247,0.4);
       cursor: pointer;
+      text-decoration: none;
     }
 
-    .menu-btn {
-      font-size: 20px;
-      background: transparent;
-      border: 1px solid white;
-      color: white;
+    nav { display: flex; gap: 6px; align-items: center; }
+
+    .nav-link {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-decoration: none;
       padding: 8px 16px;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      position: relative;
       cursor: pointer;
-      transition: background 0.3s;
+      background: none;
+    }
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      width: 0; height: 1px;
+      background: var(--neon-cyan);
+      transition: all 0.3s;
+      transform: translateX(-50%);
+    }
+    .nav-link:hover { color: var(--neon-cyan); border-color: rgba(0,255,247,0.2); }
+    .nav-link:hover::before { width: 80%; }
+
+    #theme-toggle {
+      background: transparent;
+      border: 1px solid var(--border-glow);
+      color: var(--neon-cyan);
+      width: 40px; height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #theme-toggle:hover { background: rgba(0,255,247,0.1); box-shadow: 0 0 15px rgba(0,255,247,0.3); }
+
+    /* ── SECTIONS ── */
+    section {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
     }
 
-    .menu-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+    /* ── HERO ── */
+    #home {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      min-height: 100vh;
+      padding: 120px 60px 80px;
+      position: relative;
+      overflow: hidden;
+      gap: 40px;
     }
 
-    .main {
-      height: 100vh;
+    .hero-left {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      align-items: flex-start;
+      text-align: left;
+      z-index: 20;
+    }
+
+    .hero-right {
+      display: flex;
       align-items: center;
-      text-align: center;
+      justify-content: center;
       position: relative;
+      z-index: 20;
+      height: 500px;
     }
 
-    .main h1 {
-      font-size: 48px;
+    /* 3D canvas for hero object only */
+    #hero-3d-canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--neon-cyan);
       margin-bottom: 20px;
-      color: #d400ff;
-      text-shadow: 0 0 10px #d400ff;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+      background: rgba(0,255,247,0.06);
+      border: 1px solid rgba(0,255,247,0.2);
+      padding: 6px 14px;
+      display: inline-block;
+    }
+    .hero-eyebrow::before { content: '> '; }
+
+    .hero-name {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(48px, 6vw, 88px);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-shadow:
+        0 0 20px rgba(0,255,247,0.8),
+        0 0 40px rgba(0,255,247,0.4),
+        0 0 80px rgba(0,255,247,0.2);
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.4s forwards;
+      margin-bottom: 6px;
     }
 
-    .main p {
-      font-size: 23px;
-      max-width: 600px;
-      color: #ccc;
-    }
-
-    .section {
-      padding: 80px 20px;
-      text-align: center;
-    }
-
-    .project-btn {
-      background: #d400ff;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-      margin-top: 20px;
-    }
-
-    .project-btn:hover {
-      background: #9b00b8;
-    }
-
-    .project-btn.secondary {
-      background: transparent;
-      border: 2px solid #d400ff;
-      margin: 0 10px;
-    }
-
-    .project-btn.secondary:hover {
-      background: #d400ff;
-    }
-
-    .projects-title {
-      background: linear-gradient(45deg, #ffffff, #00d4ff);
+    .hero-name span {
+      display: block;
+      background: linear-gradient(135deg, #ffffff 0%, var(--neon-cyan) 60%, var(--neon-purple) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      font-size: 2.5em;
-      margin-bottom: 15px;
+      filter: drop-shadow(0 0 20px rgba(0,255,247,0.5));
     }
 
-    .projects-subtitle {
-      color: #ccc;
-      font-size: 1.2em;
-      margin-bottom: 50px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
+    .hero-sub {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(13px, 1.5vw, 18px);
+      font-weight: 600;
+      letter-spacing: 5px;
+      color: #ffffff;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.6s forwards;
+      margin-bottom: 28px;
+      padding-left: 3px;
     }
 
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto 50px auto;
+    .hero-divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, var(--neon-cyan), transparent);
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.65s forwards;
     }
 
-    .project-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 15px;
-      overflow: hidden;
-      border: 1px solid rgba(212, 0, 255, 0.3);
-      transition: all 0.3s ease;
+    .hero-desc {
+      font-size: 16px;
+      color: rgba(220, 240, 255, 0.75);
+      max-width: 480px;
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.8s forwards;
+      margin-bottom: 42px;
     }
 
-    .project-card:hover {
-      transform: translateY(-10px);
-      border-color: #d400ff;
-      box-shadow: 0 10px 30px rgba(212, 0, 255, 0.3);
+    .hero-btns {
+      display: flex; gap: 16px; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1s forwards;
     }
 
-    .project-image {
-      height: 200px;
-      overflow: hidden;
-    }
-
-    .project-image-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .crowwed-color { background: linear-gradient(45deg, #ff6b35, #3498db); }
-    .zombie-game { background: linear-gradient(45deg, #2c3e50, #34495e); }
-    .ar-experience { background: linear-gradient(45deg, #1a1a1a, #2d2d2d); }
-
-    .image-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 80%;
-      height: 60%;
-    }
-
-    .blue-figure {
-      width: 50px; height: 70px;
-      background: #3498db;
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      position: relative;
-      transform: rotate(-15deg);
-    }
-    .blue-figure::before {
-      content: '';
-      position: absolute;
-      top: -8px; left: 50%;
-      transform: translateX(-50%);
-      width: 18px; height: 25px;
-      background: #3498db;
-      border-radius: 8px;
-    }
-
-    .red-figure {
-      width: 45px; height: 65px;
-      background: #e74c3c;
-      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-      position: relative;
-      transform: rotate(15deg);
-    }
-    .red-figure::before {
-      content: '';
-      position: absolute;
-      top: -8px; left: 50%;
-      transform: translateX(-50%);
-      width: 16px; height: 22px;
-      background: #e74c3c;
-      border-radius: 8px;
-    }
-
-    .zombie-silhouette {
-      width: 80px; height: 80px;
-      background: #95a5a6;
-      border-radius: 50%;
-      position: relative;
-    }
-    .zombie-silhouette::before {
-      content: '';
-      position: absolute;
-      top: -20px; left: 50%;
-      transform: translateX(-50%);
-      width: 100px; height: 40px;
-      background: #95a5a6;
-      border-radius: 20px;
-      clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
-    }
-
-    .coming-soon { color: #ccc; font-size: 1.5em; font-weight: bold; }
-
-    .project-content { padding: 25px; }
-
-    .project-title { color: #d400ff; font-size: 1.8em; margin-bottom: 15px; }
-
-    .project-description { color: #ccc; line-height: 1.6; margin-bottom: 20px; font-size: 1em; }
-
-    .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
-
-    .tag {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ccc;
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-size: 0.9em;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .play-game-btn {
-      background: #d400ff;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 1em;
+    .btn-primary {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      padding: 15px 32px;
+      background: rgba(0,255,247,0.08);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
       cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-    .play-game-btn:hover { background: #9b00b8; transform: translateY(-2px); }
-    .play-game-btn.disabled { background: #666; cursor: not-allowed; }
-    .play-game-btn.disabled:hover { background: #666; transform: none; }
-
-    .project-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 30px;
-    }
-
-    .footer {
-      background: rgba(0, 0, 0, 0.8);
-      border-top: 1px solid rgba(212, 0, 255, 0.3);
-      margin-top: 80px;
-      padding: 40px 0 20px 0;
-    }
-
-    .footer-content {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 40px;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .footer-section h3 { color: #d400ff; font-size: 1.5em; margin-bottom: 15px; }
-    .footer-section h4 { color: #00d4ff; font-size: 1.2em; margin-bottom: 15px; }
-    .footer-section p { color: #ccc; line-height: 1.6; margin-bottom: 8px; }
-    .footer-section ul { list-style: none; padding: 0; }
-    .footer-section ul li { margin-bottom: 8px; }
-    .footer-section ul li a { color: #ccc; text-decoration: none; transition: color 0.3s ease; }
-    .footer-section ul li a:hover { color: #d400ff; }
-
-    .contact-link {
-      color: #ccc;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
       text-decoration: none;
-      transition: all 0.3s ease;
-      border-bottom: 1px solid transparent;
+      display: inline-block;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
     }
-    .contact-link:hover { color: #d400ff; border-bottom: 1px solid #d400ff; }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,255,247,0.15), transparent);
+      transition: left 0.5s;
+    }
+    .btn-primary:hover { background: rgba(0,255,247,0.18); box-shadow: 0 0 30px rgba(0,255,247,0.4); color: white; }
+    .btn-primary:hover::before { left: 100%; }
 
-    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 30px; padding-top: 20px; text-align: center; }
-    .footer-bottom p { color: #999; font-size: 0.9em; }
+    .btn-secondary {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      padding: 15px 32px;
+      background: rgba(191,0,255,0.06);
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+    .btn-secondary:hover { background: rgba(191,0,255,0.15); box-shadow: 0 0 30px rgba(191,0,255,0.4); color: white; }
 
-    @media (max-width: 768px) {
-      .footer-content { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-      .footer-section { padding: 0 20px; }
+    /* ── HERO 3D OBJECT LABEL ── */
+    .hero-3d-label {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(0,255,247,0.35);
+      animation: float 3s ease-in-out infinite;
+      white-space: nowrap;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-8px); }
     }
 
-    .skills-container {
+    @media (max-width: 900px) {
+      #home {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 100px 30px 60px;
+      }
+      .hero-left { align-items: center; }
+      .hero-right { height: 300px; }
+      .hero-desc { max-width: 100%; }
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      text-align: center;
+      margin-bottom: 70px;
+    }
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 5px;
+      color: var(--neon-cyan);
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, var(--neon-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-line {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      margin: 20px auto 0;
+    }
+
+    /* ── ABOUT ── */
+    #about {
+      padding: 120px 40px;
+    }
+    .about-grid {
+      max-width: 1100px;
+      margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 50px;
-      max-width: 1200px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-
-    .skills-left { display: flex; flex-direction: column; gap: 30px; }
-
-    .role-card {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 15px;
-      border: 1px solid rgba(212, 0, 255, 0.3);
-      transition: all 0.3s ease;
-    }
-    .role-card:hover { background: rgba(255,255,255,0.15); border-color: #d400ff; transform: translateY(-5px); }
-    .role-title { margin-bottom: 20px; font-size: 1.8em; font-weight: bold; }
-    .role-title.unity { background: linear-gradient(45deg, #d400ff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .role-title.graphics { color: #00d4ff; }
-    .role-card p { color: #ccc; line-height: 1.8; font-size: 1.1em; }
-
-    .skills-right { display: flex; flex-direction: column; gap: 40px; }
-    .technical-skills h3, .languages-tools h3 { color: white; margin-bottom: 25px; font-size: 1.5em; }
-    .languages-tools h3 { color: #00d4ff; }
-
-    .skill-bars { display: flex; flex-direction: column; gap: 20px; }
-    .skill-bar { display: flex; align-items: center; gap: 15px; }
-    .skill-name { min-width: 120px; color: #ccc; font-size: 1em; }
-    .progress-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, #d400ff, #00d4ff); border-radius: 4px; transition: width 2s ease; }
-    .skill-percentage { min-width: 40px; color: #ccc; font-size: 0.9em; text-align: right; }
-
-    .tools-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-    .tool-tag {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      border: 1px solid rgba(255,255,255,0.2);
-      transition: all 0.3s ease;
-    }
-    .tool-tag:hover { background: rgba(212,0,255,0.3); border-color: #d400ff; transform: translateY(-2px); }
-
-    @media (max-width: 768px) {
-      .skills-container { grid-template-columns: 1fr; gap: 30px; }
-      .skill-bar { flex-direction: column; align-items: flex-start; gap: 8px; }
-      .skill-name { min-width: auto; }
-      .progress-bar { width: 100%; }
-      .skill-percentage { min-width: auto; text-align: left; }
-    }
-
-    .contact-info {
-      background: rgba(255,255,255,0.1);
-      padding: 30px;
-      border-radius: 10px;
-      margin: 30px 0;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .contact-info p { margin: 15px 0; font-size: 1.1em; color: #ccc; }
-
-    .about-content {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 50px;
-      max-width: 1000px;
-      margin: 0 auto;
+      gap: 60px;
       align-items: start;
     }
-
-    .about-text p { margin-bottom: 20px; line-height: 1.5; color: #ccc; font-size: 23px; }
-
-    .about-stats { display: flex; flex-direction: column; gap: 30px; }
-
-    .stat-item {
-      text-align: center;
-      padding: 20px;
-      background: rgba(5, 4, 5, 0.925);
-      border-radius: 10px;
-      border: 1px solid rgba(212, 0, 255, 0);
-      transition: all 0.3s ease;
+    .about-text p {
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--text-dim);
+      margin-bottom: 20px;
     }
-    .stat-item:hover { background: rgba(255,255,255,0.15); border-color: #d400ff; transform: translateY(-5px); }
-    .stat-item h3 { font-size: 2.5em; color: #d400ff; margin-bottom: 10px; }
-    .stat-item p { color: #ccc; font-size: 1em; }
+    .about-text p span { color: var(--neon-cyan); }
 
-    @media (max-width: 768px) {
-      .about-content { grid-template-columns: 1fr; gap: 30px; }
-      .about-stats { flex-direction: row; justify-content: space-around; }
-      .stat-item { flex: 1; padding: 15px; }
-      .stat-item h3 { font-size: 2em; }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
-
-    #particles-js { position: fixed; width: 100%; height: 100%; z-index: -1; }
-
-    .header-controls { display: flex; align-items: center; gap: 15px; }
-
-    .theme-toggle {
-      background: rgba(255,255,255,0.1);
-      border: 2px solid #d400ff;
-      color: #d400ff;
-      padding: 8px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 18px;
-      width: 45px; height: 45px;
-      display: flex; align-items: center; justify-content: center;
-      user-select: none;
+    .stat-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-glow);
+      padding: 24px;
       position: relative;
-      z-index: 1000;
+      overflow: hidden;
+      transition: all 0.3s;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
     }
-    .theme-toggle:hover { background: #d400ff; color: white; transform: scale(1.1); box-shadow: 0 0 15px #d400ff; }
-    .theme-toggle:active { transform: scale(0.95); background: #d400ff; color: white; }
-
-    body.dark-mode { background: #34073f !important; color: white; }
-    body.dark-mode header { background: rgba(0,0,0,0.4); }
-    body.dark-mode .project-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
-
-    body.light-mode { background: #ffffffab !important; color: #333; }
-    body.light-mode header { background: rgba(213,193,218,0.9); backdrop-filter: blur(10px); }
-    body.light-mode .logo { color: #333; }
-    body.light-mode .menu-btn { border: 1px solid #333; color: #333; }
-    body.light-mode .main h1 { color: #d400ff81; text-shadow: 0 0 10px #d400ff; }
-    body.light-mode .main p { color: #555; }
-    body.light-mode .projects-title { background: linear-gradient(45deg, #333333, #a5a3a5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    body.light-mode .projects-subtitle { color: #666; }
-    body.light-mode .project-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    body.light-mode .project-card:hover { background: rgba(255,255,255,1); box-shadow: 0 8px 25px rgba(0,0,0,0.15); border-color: #d400ff; }
-    body.light-mode .project-title { color: #333; }
-    body.light-mode .project-description { color: #666; }
-    body.light-mode .tag { background: rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.2); }
-    body.light-mode .skill-name { color: #333; }
-    body.light-mode .skill-percentage { color: #333; }
-    body.light-mode .tool-tag { background: rgba(0,0,0,0.1); color: #333; border: 1px solid rgba(0,0,0,0.2); }
-    body.light-mode .tool-tag:hover { background: rgba(212,0,255,0.2); border-color: #d400ff; }
-    body.light-mode .role-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    body.light-mode .role-card p { color: #666; }
-    body.light-mode .technical-skills h3 { color: #333; }
-    body.light-mode .contact-info { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); }
-    body.light-mode .contact-info p { color: #333; }
-    body.light-mode .contact-link { color: #333; }
-    body.light-mode .contact-link:hover { color: #d400ff; }
-    body.light-mode .footer { background: rgba(255,255,255,0.9); color: #333; }
-    body.light-mode .footer h3 { color: #d400ff; }
-    body.light-mode .footer h4 { color: #00d4ff; }
-    body.light-mode .footer p { color: #666; }
-    body.light-mode .footer a { color: #d400ff; }
-    body.light-mode .stat-item { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    body.light-mode .stat-item p { color: #666; }
-    body.light-mode .about-text p { color: #666; }
-    body.light-mode .theme-toggle { border: 2px solid #333; color: #333; background: rgba(255,255,255,0.1); }
-    body.light-mode .theme-toggle:hover { background: #333; color: white; box-shadow: 0 0 15px #333; }
-
-    .theme-toggle .theme-icon { transition: transform 0.3s ease; }
-    .theme-toggle:hover .theme-icon { transform: rotate(180deg); }
-
-    body, header, .project-card, .skill-bar, .contact-info, .footer {
-      transition: all 0.3s ease;
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, rgba(0,255,247,0.05) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .stat-card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,247,0.1); }
+    .stat-card:hover::before { opacity: 1; }
+    .stat-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 42px;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 20px rgba(0,255,247,0.5);
+      display: block;
+    }
+    .stat-label {
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-top: 4px;
     }
 
-    /* ============================================
-       AI CHATBOT WIDGET — Matches portfolio theme
-       ============================================ */
-    #rishi-chatbot * { box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+    /* ── PROJECTS ── */
+    #projects {
+      padding: 120px 40px;
+    }
+    .projects-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+    .project-card {
+      background: rgba(0,255,247,0.02);
+      border: 1px solid rgba(0,255,247,0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    }
+    .project-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0,255,247,0.04), transparent);
+      transition: left 0.6s;
+    }
+    .project-card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 40px rgba(0,255,247,0.1), inset 0 0 40px rgba(0,255,247,0.02); transform: translateY(-6px); }
+    .project-card:hover::after { left: 120%; }
 
-    #chat-toggle {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #d400ff, #554db4);
-      border: none;
-      cursor: pointer;
+    .project-thumb {
+      height: 200px;
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 0 0 rgba(212, 0, 255, 0.6);
-      z-index: 9999;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      animation: chat-pulse 2.5s infinite;
     }
-    @keyframes chat-pulse {
-      0%   { box-shadow: 0 0 0 0 rgba(212, 0, 255, 0.6); }
-      70%  { box-shadow: 0 0 0 16px rgba(212, 0, 255, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(212, 0, 255, 0); }
-    }
-    #chat-toggle:hover { transform: scale(1.12); animation: none; box-shadow: 0 8px 30px rgba(212, 0, 255, 0.6); }
-    #chat-toggle.open { animation: none; transform: rotate(45deg); box-shadow: 0 8px 30px rgba(212, 0, 255, 0.4); }
-
-    #chat-toggle svg { width: 26px; height: 26px; fill: white; }
-
-    /* Notification badge */
-    #chat-badge {
+    .project-thumb canvas {
       position: absolute;
-      top: 4px; right: 4px;
-      width: 14px; height: 14px;
-      background: #ff4757;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .thumb-crowwed { background: linear-gradient(135deg, #0d0020, #1a0040, #0d0020); }
+    .thumb-zombie { background: linear-gradient(135deg, #001a0d, #002d1a, #001a0d); }
+    .thumb-ar { background: linear-gradient(135deg, #001020, #001830, #001020); }
+
+    .thumb-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .project-body { padding: 28px; }
+    .project-id {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+      opacity: 0.6;
+      margin-bottom: 8px;
+    }
+    .project-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 12px;
+    }
+    .project-desc {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+    .tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border: 1px solid rgba(0,255,247,0.2);
+      color: rgba(0,255,247,0.7);
+      background: rgba(0,255,247,0.04);
+    }
+
+    .play-btn {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      padding: 13px 0;
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .play-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 0; height: 100%;
+      background: rgba(0,255,247,0.08);
+      transition: width 0.3s;
+    }
+    .play-btn:hover::before { width: 100%; }
+    .play-btn:hover { box-shadow: 0 0 20px rgba(0,255,247,0.2); }
+    .play-btn.disabled { border-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.2); cursor: not-allowed; }
+    .play-btn.disabled::before { display: none; }
+
+    /* ── SKILLS ── */
+    #skills {
+      padding: 120px 40px;
+    }
+    .skills-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+    .role-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-glow);
+      padding: 32px;
+      margin-bottom: 20px;
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+      transition: all 0.3s;
+    }
+    .role-card:hover { border-color: var(--neon-cyan); box-shadow: 0 0 30px rgba(0,255,247,0.08); }
+    .role-card-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+    .role-card h3 {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      background: linear-gradient(90deg, #fff, var(--neon-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .role-card p { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
+
+    .skill-bar-wrap { margin-bottom: 20px; }
+    .skill-bar-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .skill-bar-name {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--text-primary);
+    }
+    .skill-bar-pct {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      color: var(--neon-cyan);
+    }
+    .skill-track {
+      height: 4px;
+      background: rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+      width: 0;
+      transition: width 2s cubic-bezier(0.4,0,0.2,1);
+      position: relative;
+    }
+    .skill-fill::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -2px;
+      width: 8px; height: 8px;
+      background: var(--neon-cyan);
       border-radius: 50%;
-      border: 2px solid #0f0f18;
-      font-size: 8px;
+      box-shadow: 0 0 8px var(--neon-cyan);
+    }
+
+    .tools-section h4 {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      color: var(--neon-purple);
+      margin: 30px 0 16px;
+      letter-spacing: 2px;
+    }
+    .tools-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tool-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 7px 14px;
+      border: 1px solid rgba(191,0,255,0.25);
+      color: rgba(191,0,255,0.8);
+      background: rgba(191,0,255,0.04);
+      transition: all 0.3s;
+      cursor: default;
+    }
+    .tool-tag:hover { border-color: var(--neon-purple); color: white; background: rgba(191,0,255,0.1); box-shadow: 0 0 12px rgba(191,0,255,0.2); }
+
+    .resume-btn {
+      margin-top: 30px;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      letter-spacing: 3px;
+      padding: 14px 36px;
+      background: transparent;
+      border: 1px solid var(--neon-green);
+      color: var(--neon-green);
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      display: inline-block;
+      text-decoration: none;
+    }
+    .resume-btn:hover { background: rgba(0,255,136,0.1); box-shadow: 0 0 25px rgba(0,255,136,0.3); }
+
+    /* ── CONTACT ── */
+    #contact {
+      padding: 120px 40px;
+    }
+    .contact-grid {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .contact-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--border-glow);
+      padding: 28px 24px;
+      text-align: center;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: block;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    .contact-card:hover { border-color: var(--neon-cyan); transform: translateY(-4px); box-shadow: 0 10px 40px rgba(0,255,247,0.1); }
+    .contact-card:hover::before { transform: scaleX(1); }
+    .contact-icon { font-size: 28px; margin-bottom: 12px; display: block; }
+    .contact-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .contact-value { font-size: 14px; color: var(--text-dim); }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 10;
+      border-top: 1px solid rgba(0,255,247,0.08);
+      padding: 40px;
+      text-align: center;
+      background: rgba(3,3,8,0.9);
+    }
+    .footer-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+    }
+    .footer-links { display: flex; gap: 24px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .footer-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--neon-cyan); }
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 2px;
+    }
+
+    /* ── AI CHATBOT ── */
+    #chat-toggle {
+      position: fixed;
+      bottom: 30px; right: 30px;
+      width: 58px; height: 58px;
+      border-radius: 0;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(0,255,247,0.3), inset 0 0 20px rgba(0,255,247,0.05);
+      z-index: 9999;
+      transition: all 0.3s;
+      clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+      animation: pulse-border 2s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { box-shadow: 0 0 20px rgba(0,255,247,0.3), inset 0 0 20px rgba(0,255,247,0.05); }
+      50% { box-shadow: 0 0 35px rgba(0,255,247,0.6), inset 0 0 20px rgba(0,255,247,0.1); }
+    }
+    #chat-toggle:hover { background: rgba(0,255,247,0.1); animation: none; box-shadow: 0 0 40px rgba(0,255,247,0.5); }
+    #chat-toggle svg { width: 24px; height: 24px; fill: var(--neon-cyan); }
+    #chat-badge {
+      position: absolute; top: -5px; right: -5px;
+      width: 18px; height: 18px;
+      background: var(--neon-pink);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
       color: white;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700;
+      box-shadow: 0 0 10px var(--neon-pink);
     }
 
     #chat-window {
       position: fixed;
-      /* Desktop: sits above the toggle button with safe spacing */
-      bottom: 98px;
-      right: 28px;
+      bottom: 100px; right: 30px;
       width: 360px;
-      /* Use dvh so it never overflows on mobile browsers */
-      max-height: min(520px, calc(100dvh - 120px));
-      height: min(520px, calc(100dvh - 120px));
-      background: #0f0f18;
-      border-radius: 22px;
-      border: 1px solid rgba(212, 0, 255, 0.25);
-      box-shadow: 0 20px 70px rgba(0,0,0,0.7), 0 0 40px rgba(212,0,255,0.1);
-      display: flex;
-      flex-direction: column;
+      height: min(520px, calc(100dvh - 130px));
+      background: rgba(3, 3, 12, 0.97);
+      border: 1px solid rgba(0,255,247,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,255,247,0.08);
+      display: flex; flex-direction: column;
       z-index: 9998;
-      overflow: hidden;
-      transform: scale(0.8) translateY(20px);
+      transform: scale(0.85) translateY(20px);
       opacity: 0;
       pointer-events: none;
       transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
     }
-    #chat-window.open {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-      pointer-events: all;
-    }
+    #chat-window.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
 
-    /* Chat Header */
     #chat-header {
       padding: 16px 18px;
-      background: linear-gradient(135deg, #d400ff22, #554db422);
-      border-bottom: 1px solid rgba(212, 0, 255, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
+      border-bottom: 1px solid rgba(0,255,247,0.1);
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(0,255,247,0.03);
     }
     #chat-avatar {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #d400ff, #554db4);
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-      box-shadow: 0 0 12px rgba(212,0,255,0.5);
+      font-size: 18px;
+      clip-path: polygon(5px 0%, 100% 0%, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0% 100%, 0% 5px);
     }
-    #chat-header-info { flex: 1; }
-    #chat-header-info h4 {
-      margin: 0; color: white;
-      font-size: 13px; font-weight: 600; letter-spacing: 0.3px;
-    }
-    #chat-header-info p {
-      margin: 2px 0 0; color: rgba(255,255,255,0.55);
-      font-size: 11px;
-    }
-    .status-dot {
-      width: 7px; height: 7px;
-      background: #2ed573;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 4px;
-      box-shadow: 0 0 5px #2ed573;
-      animation: blink-dot 3s infinite;
-    }
-    @keyframes blink-dot {
-      0%, 90%, 100% { opacity: 1; }
-      95% { opacity: 0.3; }
-    }
+    #chat-header-info h4 { font-family: 'Orbitron', monospace; font-size: 12px; color: white; font-weight: 600; margin-bottom: 2px; }
+    #chat-header-info p { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(0,255,247,0.5); }
+    .status-dot { display: inline-block; width: 6px; height: 6px; background: var(--neon-green); border-radius: 50%; margin-right: 4px; box-shadow: 0 0 6px var(--neon-green); }
 
-    /* Messages area */
     #chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 14px 14px 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(212,0,255,0.2) transparent;
+      flex: 1; overflow-y: auto; padding: 14px; gap: 10px; display: flex; flex-direction: column;
+      scrollbar-width: thin; scrollbar-color: rgba(0,255,247,0.1) transparent;
     }
-    #chat-messages::-webkit-scrollbar { width: 4px; }
-    #chat-messages::-webkit-scrollbar-thumb { background: rgba(212,0,255,0.2); border-radius: 4px; }
-
     .msg {
-      max-width: 84%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 12.5px;
-      line-height: 1.55;
-      animation: msgSlide 0.28s cubic-bezier(0.34,1.3,0.64,1);
+      max-width: 85%; padding: 10px 13px;
+      font-family: 'Rajdhani', sans-serif; font-size: 13px; line-height: 1.5;
+      animation: msgIn 0.25s ease;
       word-break: break-word;
     }
-    @keyframes msgSlide {
-      from { opacity: 0; transform: translateY(12px) scale(0.95); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .msg.bot {
-      background: rgba(255,255,255,0.07);
-      color: #ddd;
-      border-bottom-left-radius: 4px;
+      background: rgba(0,255,247,0.05);
+      border: 1px solid rgba(0,255,247,0.1);
+      color: #cde;
       align-self: flex-start;
-      border: 1px solid rgba(255,255,255,0.06);
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
     }
     .msg.user {
-      background: linear-gradient(135deg, #d400ff, #554db4);
+      background: linear-gradient(135deg, rgba(0,255,247,0.15), rgba(191,0,255,0.15));
+      border: 1px solid rgba(0,255,247,0.2);
       color: white;
-      border-bottom-right-radius: 4px;
       align-self: flex-end;
-      box-shadow: 0 4px 15px rgba(212,0,255,0.3);
+      clip-path: polygon(8px 0%, 100% 0%, 100% 100%, 0 100%, 0 8px);
     }
-    .msg-time {
-      font-size: 10px;
-      opacity: 0.4;
-      margin-top: 4px;
-      display: block;
-    }
-
-    /* Typing indicator */
+    .msg-time { font-family: 'Share Tech Mono', monospace; font-size: 9px; opacity: 0.3; margin-top: 4px; display: block; }
     .typing-bubble {
-      display: flex; gap: 4px; align-items: center;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
-      align-self: flex-start;
-      animation: msgSlide 0.28s ease;
+      display: flex; gap: 4px; align-items: center; padding: 12px 16px;
+      background: rgba(0,255,247,0.05); border: 1px solid rgba(0,255,247,0.1);
+      align-self: flex-start; animation: msgIn 0.25s ease;
     }
     .typing-bubble span {
-      width: 6px; height: 6px;
-      background: rgba(212,0,255,0.7);
-      border-radius: 50%;
-      animation: bounce-dot 1.3s ease infinite;
+      width: 5px; height: 5px; background: var(--neon-cyan); border-radius: 50%;
+      animation: typingDot 1.2s infinite;
     }
-    .typing-bubble span:nth-child(2) { animation-delay: 0.18s; }
-    .typing-bubble span:nth-child(3) { animation-delay: 0.36s; }
-    @keyframes bounce-dot {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); background: #d400ff; }
+    .typing-bubble span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-bubble span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typingDot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-5px); opacity: 1; }
     }
 
-    /* Quick replies */
-    #quick-replies {
-      padding: 4px 14px 8px;
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
+    #quick-replies { padding: 4px 12px 8px; display: flex; gap: 6px; flex-wrap: wrap; }
     .q-btn {
-      background: rgba(212,0,255,0.1);
-      border: 1px solid rgba(212,0,255,0.3);
-      color: #e080ff;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 1px;
+      padding: 5px 10px;
+      background: transparent;
+      border: 1px solid rgba(0,255,247,0.2);
+      color: rgba(0,255,247,0.7);
+      cursor: pointer; transition: all 0.2s;
     }
-    .q-btn:hover { background: rgba(212,0,255,0.25); border-color: #d400ff; color: white; }
+    .q-btn:hover { background: rgba(0,255,247,0.08); border-color: var(--neon-cyan); color: white; }
 
-    /* Input area */
     #chat-input-area {
-      padding: 10px 12px 12px;
-      border-top: 1px solid rgba(212,0,255,0.15);
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      flex-shrink: 0;
+      padding: 10px 12px 14px;
+      border-top: 1px solid rgba(0,255,247,0.1);
+      display: flex; gap: 8px; align-items: flex-end;
     }
     #chat-input {
       flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(212,0,255,0.2);
-      border-radius: 14px;
+      background: rgba(0,255,247,0.04);
+      border: 1px solid rgba(0,255,247,0.15);
       padding: 9px 13px;
       color: #eee;
-      font-size: 12.5px;
-      resize: none;
-      outline: none;
-      max-height: 80px;
-      min-height: 38px;
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      resize: none; outline: none;
+      max-height: 80px; min-height: 38px;
       transition: border-color 0.2s;
     }
-    #chat-input:focus { border-color: rgba(212,0,255,0.55); }
-    #chat-input::placeholder { color: rgba(255,255,255,0.22); }
-
+    #chat-input:focus { border-color: rgba(0,255,247,0.4); }
+    #chat-input::placeholder { color: rgba(255,255,255,0.2); }
     #chat-send {
       width: 38px; height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #d400ff, #554db4);
-      border: none;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: transform 0.2s, opacity 0.2s;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(212,0,255,0.4);
+      transition: all 0.2s;
+      clip-path: polygon(4px 0%, 100% 0%, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0% 100%, 0% 4px);
     }
-    #chat-send:hover { transform: scale(1.1); }
-    #chat-send:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-    #chat-send svg { width: 16px; height: 16px; fill: white; }
+    #chat-send:hover { background: rgba(0,255,247,0.1); box-shadow: 0 0 12px rgba(0,255,247,0.3); }
+    #chat-send:disabled { opacity: 0.3; cursor: not-allowed; }
+    #chat-send svg { width: 15px; height: 15px; fill: var(--neon-cyan); }
 
-    /* Light mode chatbot adjustments */
-    body.light-mode #chat-window {
-      background: #fafafa;
-      border-color: rgba(212,0,255,0.3);
-    }
-    body.light-mode .msg.bot {
-      background: rgba(0,0,0,0.06);
-      color: #333;
-      border-color: rgba(0,0,0,0.08);
-    }
-    body.light-mode #chat-input {
-      background: rgba(0,0,0,0.05);
-      border-color: rgba(212,0,255,0.25);
-      color: #333;
-    }
-    body.light-mode #chat-header-info h4 { color: #222; }
-    body.light-mode #chat-header-info p { color: rgba(0,0,0,0.45); }
-    body.light-mode #chat-messages { scrollbar-color: rgba(212,0,255,0.15) transparent; }
-    body.light-mode #chat-badge { border-color: #fafafa; }
+    /* ── MOBILE NAV ── */
+    #menu-toggle { display: none; }
 
-    /* --- Tablet landscape / small desktop (768px - 1024px) --- */
-    @media (max-width: 1024px) {
-      #chat-window {
-        width: 340px;
-        right: 22px;
-        bottom: 94px;
-      }
-      #chat-toggle {
-        bottom: 24px;
-        right: 22px;
-      }
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- Tablet portrait (480px - 768px) --- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      #chat-window {
-        /* On tablets, centre-right, leave room at edges */
-        width: min(340px, calc(100vw - 32px));
-        right: 16px;
-        bottom: 90px;
-        max-height: min(460px, calc(100dvh - 110px));
-        height: min(460px, calc(100dvh - 110px));
-        border-radius: 18px;
-      }
-      #chat-toggle {
-        bottom: 20px;
-        right: 16px;
-        width: 54px;
-        height: 54px;
-      }
+      header { padding: 16px 20px; }
+      nav .nav-link { display: none; }
+      #menu-toggle { display: block; background: transparent; border: 1px solid var(--border-glow); color: var(--neon-cyan); padding: 8px 14px; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; }
+      .about-grid, .skills-layout { grid-template-columns: 1fr; }
+      .hero-name { font-size: clamp(38px, 12vw, 72px); }
+      #chat-window { width: calc(100vw - 24px); right: 12px; }
     }
 
-    /* --- Mobile (max 480px) --- */
-    @media (max-width: 480px) {
-      #chat-window {
-        /* Full width with small side margins, anchored to bottom */
-        width: calc(100vw - 24px);
-        left: 12px;
-        right: 12px;
-        bottom: 82px;
-        /* Leave header height + toggle + safe area at top/bottom */
-        max-height: calc(100dvh - 100px);
-        height: calc(100dvh - 100px);
-        border-radius: 16px;
-        transform-origin: bottom center;
-      }
-      #chat-toggle {
-        bottom: 16px;
-        right: 16px;
-        width: 52px;
-        height: 52px;
-      }
-      /* Slightly smaller fonts on tiny screens */
-      .msg { font-size: 12px; }
-      .q-btn { font-size: 10.5px; padding: 5px 10px; }
-      #chat-input { font-size: 12px; }
-      #chat-header-info h4 { font-size: 12.5px; }
+    /* Light mode */
+    body.light-mode {
+      --dark-bg: #f0f0f5;
+      --panel-bg: rgba(0,0,0,0.03);
+      --border-glow: rgba(100,0,200,0.2);
+      --text-primary: #1a1a2e;
+      --text-dim: rgba(26,26,46,0.6);
+      --neon-cyan: #6600cc;
+      --neon-purple: #cc00ff;
     }
-
-    /* --- Very small phones (max 360px) --- */
-    @media (max-width: 360px) {
-      #chat-window {
-        width: calc(100vw - 16px);
-        left: 8px;
-        right: 8px;
-        bottom: 78px;
-        max-height: calc(100dvh - 96px);
-        height: calc(100dvh - 96px);
-      }
-      #chat-toggle {
-        bottom: 14px;
-        right: 14px;
-        width: 48px;
-        height: 48px;
-      }
-    }
-
-    /* --- Safe area insets for iPhone notch / home bar --- */
-    @supports (padding-bottom: env(safe-area-inset-bottom)) {
-      #chat-toggle {
-        bottom: calc(28px + env(safe-area-inset-bottom));
-      }
-      #chat-window {
-        bottom: calc(98px + env(safe-area-inset-bottom));
-      }
-      @media (max-width: 480px) {
-        #chat-toggle { bottom: calc(16px + env(safe-area-inset-bottom)); }
-        #chat-window { bottom: calc(82px + env(safe-area-inset-bottom)); }
-      }
-    }
-    /* ============================================ */
+    body.light-mode #three-canvas { opacity: 0.4; }
+    body.light-mode #scanlines { display: none; }
   </style>
 </head>
 <body>
-  <div id="particles-js"></div>
+
+  <!-- Cursor -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Three.js Canvas -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Overlays -->
+  <div id="scanlines"></div>
+  <div id="vignette"></div>
+
+  <!-- Header -->
   <header>
-    <div class="logo" onclick="location.reload()">R🎮V</div>
-    <div class="header-controls">
-      <button class="theme-toggle" id="theme-toggle">
-        <span class="theme-icon">🌙</span>
-      </button>
-      <button class="menu-btn">Menu</button>
-    </div>
+    <a class="logo" href="#home">RV</a>
+    <nav>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="#projects">Projects</a>
+      <a class="nav-link" href="#skills">Skills</a>
+      <a class="nav-link" href="#contact">Contact</a>
+      <button id="theme-toggle" title="Toggle theme">☀️</button>
+      <button id="menu-toggle">Menu</button>
+    </nav>
   </header>
 
-  <section class="main" id="home">
-    <h1>Rishi Vagadiya</h1>
-    <p>Unity 3D Developer & Game Development Professional<br>With 1 year of experience creating immersive gaming experiences</p>
+  <!-- ── HERO ── -->
+  <section id="home">
+    <div class="hero-left">
+      <p class="hero-eyebrow">GAME DEVELOPER · PORTFOLIO · 2024</p>
+      <h1 class="hero-name">
+        <span>RISHI</span>
+        <span>VAGADIYA</span>
+      </h1>
+      <div class="hero-divider"></div>
+      <p class="hero-sub">Unity 3D &nbsp;·&nbsp; C# &nbsp;·&nbsp; Game Dev</p>
+      <p class="hero-desc">Crafting immersive gaming experiences with Unity 3D. Passionate game developer with expertise in gameplay systems, AI navigation, and AR/VR.</p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">▶ View Projects</a>
+        <a href="#contact" class="btn-secondary">Get In Touch</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <canvas id="hero-3d-canvas"></canvas>
+    </div>
+    <p class="hero-3d-label">🖱 MOVE MOUSE TO INTERACT WITH 3D OBJECT</p>
   </section>
 
-  <section class="section" id="about">
-    <h2>About Me</h2>
-    <div class="about-content">
-      <div class="about-text">
-        <p>Hello! I'm Rishi Vagadiya, a passionate Unity 3D Game Developer with a year of professional experience in creating immersive gaming experiences. I specialize in developing engaging games with efficient code and stunning visuals.</p>
-        <p>My expertise includes Unity 3D development, C# programming, graphics programming, and AR/VR development. I'm constantly learning and exploring new technologies to push the boundaries of what's possible in game development.</p>
-        <p>When I'm not coding, you can find me experimenting with new game mechanics, exploring 3D modeling, or contributing to open-source game development projects.</p>
+  <!-- ── ABOUT ── -->
+  <section id="about">
+    <div class="section-header reveal">
+      <p class="section-tag">// ABOUT_ME.EXE</p>
+      <h2 class="section-title">About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>I'm <span>Rishi Vagadiya</span>, a passionate Unity 3D Game Developer with 1 year of professional experience creating immersive gaming experiences.</p>
+        <p>I specialize in <span>Unity 3D development</span>, <span>C# programming</span>, graphics programming, and AR/VR development — constantly pushing the boundaries of interactive entertainment.</p>
+        <p>When not coding, I'm experimenting with new game mechanics, exploring 3D modeling, or contributing to open-source game development projects.</p>
       </div>
-      <div class="about-stats">
-        <div class="stat-item"><h3>1+</h3><p>Years Experience</p></div>
-        <div class="stat-item"><h3>10+</h3><p>Projects Completed</p></div>
-        <div class="stat-item"><h3>5+</h3><p>Technologies</p></div>
+      <div class="stat-grid reveal">
+        <div class="stat-card">
+          <span class="stat-num">1+</span>
+          <p class="stat-label">Years Exp</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">10+</span>
+          <p class="stat-label">Projects</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">5+</span>
+          <p class="stat-label">Technologies</p>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">∞</span>
+          <p class="stat-label">Passion</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section" id="projects">
-    <h2 class="projects-title">My Projects</h2>
-    <p class="projects-subtitle">Here are some of the game development projects I've worked on using Unity 3D and C#</p>
-    
+  <!-- ── PROJECTS ── -->
+  <section id="projects">
+    <div class="section-header reveal">
+      <p class="section-tag">// PROJECTS.LOAD()</p>
+      <h2 class="section-title">My Projects</h2>
+      <div class="section-line"></div>
+    </div>
     <div class="projects-grid">
-      <div class="project-card">
-        <div class="project-image">
-          <div class="project-image-placeholder crowwed-color">
-            <div class="image-content">
-              <div class="blue-figure"></div>
-              <div class="red-figure"></div>
-            </div>
-          </div>
+
+      <div class="project-card reveal">
+        <div class="project-thumb thumb-crowwed">
+          <canvas class="mini-canvas" data-type="crowwed"></canvas>
         </div>
-        <div class="project-content">
-          <h3 class="project-title">Crowwed Color</h3>
-          <p class="project-description">A 3D running game where players solve math questions while running (e.g., 'What is 2+2?'). The game consists of 5 levels, all created within a single scene using Empty GameObjects. Unity Ads are displayed after each level completion.</p>
+        <div class="project-body">
+          <p class="project-id">PROJECT_01 — MOBILE</p>
+          <h3 class="project-name">Crowwed Color</h3>
+          <p class="project-desc">A 3D running game where players solve math questions while running. 5 levels in a single scene using Empty GameObjects. Features Unity Ads after each level.</p>
           <div class="project-tags">
             <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">AI</span><span class="tag">Physics</span>
           </div>
-          <button class="play-game-btn" data-url="https://drive.google.com/file/d/1ePns9H9h8htrAnfnYsxh1q-Z_slxIfbn/view">Play Game</button>
+          <button class="play-btn" onclick="window.open('https://drive.google.com/file/d/1ePns9H9h8htrAnfnYsxh1q-Z_slxIfbn/view','_blank')">▶ PLAY GAME</button>
         </div>
       </div>
 
-      <div class="project-card">
-        <div class="project-image">
-          <div class="project-image-placeholder zombie-game">
-            <div class="zombie-silhouette"></div>
-          </div>
+      <div class="project-card reveal">
+        <div class="project-thumb thumb-zombie">
+          <canvas class="mini-canvas" data-type="zombie"></canvas>
         </div>
-        <div class="project-content">
-          <h3 class="project-title">Zombie Killing Game</h3>
-          <p class="project-description">A 3D action game where the player attacks enemies. When the player gets close to enemies, they start chasing and attacking. Designed the complete environment and implemented enemy AI behavior.</p>
+        <div class="project-body">
+          <p class="project-id">PROJECT_02 — MOBILE</p>
+          <h3 class="project-name">Zombie Killing Game</h3>
+          <p class="project-desc">A 3D action game with proximity-based enemy AI. Enemies detect and chase the player, complete with combat mechanics and custom-designed environment.</p>
           <div class="project-tags">
-            <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">AI Navigation</span><span class="tag">3D</span>
+            <span class="tag">Unity 3D</span><span class="tag">C#</span><span class="tag">AI Nav</span><span class="tag">3D</span>
           </div>
-          <button class="play-game-btn" data-url="https://drive.google.com/file/d/13oiid8qWvXb2e8iPC3sSCjXkrtbv-KPP/view?usp=drive_link">Play Game</button>
+          <button class="play-btn" onclick="window.open('https://drive.google.com/file/d/13oiid8qWvXb2e8iPC3sSCjXkrtbv-KPP/view?usp=drive_link','_blank')">▶ PLAY GAME</button>
         </div>
       </div>
 
-      <div class="project-card">
-        <div class="project-image">
-          <div class="project-image-placeholder ar-experience">
-            <div class="coming-soon">Coming Soon</div>
-          </div>
+      <div class="project-card reveal">
+        <div class="project-thumb thumb-ar">
+          <canvas class="mini-canvas" data-type="ar"></canvas>
         </div>
-        <div class="project-content">
-          <h3 class="project-title">AR Experience</h3>
-          <p class="project-description">An augmented reality application that transforms your surroundings into an interactive experience.</p>
+        <div class="project-body">
+          <p class="project-id">PROJECT_03 — AR/VR</p>
+          <h3 class="project-name">AR Experience</h3>
+          <p class="project-desc">An augmented reality application transforming your surroundings into an interactive experience. Built with Unity AR Foundation.</p>
           <div class="project-tags">
             <span class="tag">Unity 3D</span><span class="tag">AR</span><span class="tag">Mobile</span><span class="tag">C#</span>
           </div>
-          <button class="play-game-btn disabled">Coming Soon</button>
+          <button class="play-btn disabled">⏳ COMING SOON</button>
         </div>
       </div>
-    </div>
 
-    <div class="project-buttons">
-      <button class="project-btn secondary" id="contact-btn">Contact Me</button>
-      <button class="project-btn secondary" id="skills-btn">View Skills</button>
     </div>
   </section>
 
-  <section class="section" id="skills" style="display: none;">
-    <h2>Skills & Technologies</h2>
-    <div class="skills-container">
-      <div class="skills-left">
-        <div class="role-card">
-          <h3 class="role-title unity">Unity 3D Game Developer</h3>
-          <p>I'm a passionate game developer with expertise in Unity 3D and C# programming. With a year of professional experience, I've focused on creating engaging gaming experiences with efficient code and stunning visuals.</p>
+  <!-- ── SKILLS ── -->
+  <section id="skills">
+    <div class="section-header reveal">
+      <p class="section-tag">// SKILLS.QUERY()</p>
+      <h2 class="section-title">Skills & Tech</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-layout">
+      <div>
+        <div class="role-card reveal">
+          <p class="role-card-tag">// ROLE_01</p>
+          <h3>Unity 3D Game Developer</h3>
+          <p>Passionate game developer with Unity 3D and C# expertise. Focused on creating engaging experiences with efficient code and stunning visuals.</p>
         </div>
-        <div class="role-card">
-          <h3 class="role-title graphics">Graphics Programmer</h3>
-          <p>As a graphics programmer, I specialize in optimizing rendering pipelines and implementing visual effects that enhance gameplay while maintaining performance. I'm constantly exploring new techniques to push the boundaries of what's possible.</p>
+        <div class="role-card reveal">
+          <p class="role-card-tag">// ROLE_02</p>
+          <h3>Graphics Programmer</h3>
+          <p>Specializing in rendering pipelines and visual effects that enhance gameplay while maintaining performance across platforms.</p>
         </div>
-      </div>
-      <div class="skills-right">
-        <div class="technical-skills">
-          <h3>Technical Skills</h3>
-          <div class="skill-bars">
-            <div class="skill-bar"><span class="skill-name">Unity 3D</span><div class="progress-bar"><div class="progress-fill" style="width: 90%"></div></div><span class="skill-percentage">90%</span></div>
-            <div class="skill-bar"><span class="skill-name">C# Scripting</span><div class="progress-bar"><div class="progress-fill" style="width: 85%"></div></div><span class="skill-percentage">85%</span></div>
-            <div class="skill-bar"><span class="skill-name">Game Development</span><div class="progress-bar"><div class="progress-fill" style="width: 80%"></div></div><span class="skill-percentage">80%</span></div>
-            <div class="skill-bar"><span class="skill-name">Graphics Programming</span><div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div><span class="skill-percentage">75%</span></div>
-            <div class="skill-bar"><span class="skill-name">AR Development</span><div class="progress-bar"><div class="progress-fill" style="width: 65%"></div></div><span class="skill-percentage">65%</span></div>
-            <div class="skill-bar"><span class="skill-name">UI/UX Design</span><div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div><span class="skill-percentage">60%</span></div>
+        <div class="tools-section reveal">
+          <h4>// TOOLS & LANGUAGES</h4>
+          <div class="tools-cloud">
+            <span class="tool-tag">Unity</span>
+            <span class="tool-tag">C#</span>
+            <span class="tool-tag">Visual Studio</span>
+            <span class="tool-tag">Git</span>
+            <span class="tool-tag">Blender</span>
+            <span class="tool-tag">Shaders</span>
+            <span class="tool-tag">AR Foundation</span>
+            <span class="tool-tag">Node.js</span>
+            <span class="tool-tag">JavaScript</span>
           </div>
         </div>
-        <div class="languages-tools">
-          <h3>Languages & Tools</h3>
-          <div class="tools-grid">
-            <span class="tool-tag">Unity</span><span class="tool-tag">C#</span><span class="tool-tag">Visual Studio</span>
-            <span class="tool-tag">Git</span><span class="tool-tag">Blender</span><span class="tool-tag">Shader Programming</span><span class="tool-tag">AR/VR</span>
-          </div>
+        <a class="resume-btn reveal" href="./rishi_game_dev.pdf" download="Rishi_Vagadiya_Resume.pdf">⬇ DOWNLOAD RESUME</a>
+      </div>
+      <div class="reveal">
+        <div class="skill-bar-wrap" data-pct="90">
+          <div class="skill-bar-header"><span class="skill-bar-name">Unity 3D</span><span class="skill-bar-pct">90%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="90%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="85">
+          <div class="skill-bar-header"><span class="skill-bar-name">C# Scripting</span><span class="skill-bar-pct">85%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="85%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="80">
+          <div class="skill-bar-header"><span class="skill-bar-name">Game Development</span><span class="skill-bar-pct">80%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="80%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="75">
+          <div class="skill-bar-header"><span class="skill-bar-name">Graphics Programming</span><span class="skill-bar-pct">75%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="75%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="65">
+          <div class="skill-bar-header"><span class="skill-bar-name">AR Development</span><span class="skill-bar-pct">65%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="65%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="70">
+          <div class="skill-bar-header"><span class="skill-bar-name">Web Dev (JS/Node)</span><span class="skill-bar-pct">70%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="70%"></div></div>
+        </div>
+        <div class="skill-bar-wrap" data-pct="60">
+          <div class="skill-bar-header"><span class="skill-bar-name">UI/UX Design</span><span class="skill-bar-pct">60%</span></div>
+          <div class="skill-track"><div class="skill-fill" style="width:0" data-w="60%"></div></div>
         </div>
       </div>
     </div>
-    <button class="project-btn" onclick="openResume()">Resume</button>
   </section>
 
-  <section class="section" id="contact" style="display: none;">
-    <h2>Get In Touch</h2>
-    <p>Let's work together on your next project!</p>
-    <div class="contact-info">
-      <p>📧 Email: <a href="mailto:Rishivagadiya613@gmail.com" class="contact-link">Rishivagadiya613@gmail.com</a></p>
-      <p>📱 Phone: <a href="tel:+916352294215" class="contact-link">+91 6352294215</a></p>
-      <p>📍 Location: Available for remote work and on site work</p>
+  <!-- ── CONTACT ── -->
+  <section id="contact">
+    <div class="section-header reveal">
+      <p class="section-tag">// CONTACT.INIT()</p>
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="section-line"></div>
     </div>
-    <button class="project-btn" onclick="openResume()">Resume</button>
+    <div class="contact-grid">
+      <a href="mailto:rishivagadiya613@gmail.com" class="contact-card reveal">
+        <span class="contact-icon">📡</span>
+        <p class="contact-label">EMAIL</p>
+        <p class="contact-value">rishivagadiya613@gmail.com</p>
+      </a>
+      <a href="tel:+916352294215" class="contact-card reveal">
+        <span class="contact-icon">📱</span>
+        <p class="contact-label">PHONE</p>
+        <p class="contact-value">+91 6352294215</p>
+      </a>
+      <div class="contact-card reveal">
+        <span class="contact-icon">🌐</span>
+        <p class="contact-label">LOCATION</p>
+        <p class="contact-value">Remote & On-Site Available</p>
+      </div>
+    </div>
   </section>
 
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>Rishi Vagadiya</h3>
-        <p>Unity 3D Game Developer & Graphics Programmer</p>
-      </div>
-      <div class="footer-section">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#home" onclick="navigateToSection('home')">Home</a></li>
-          <li><a href="#about" onclick="navigateToSection('about')">About</a></li>
-          <li><a href="#projects" onclick="navigateToSection('projects')">Projects</a></li>
-          <li><a href="#contact" onclick="navigateToSection('contact')">Contact</a></li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h4>Contact Info</h4>
-        <p>📧 <a href="mailto:Rishivagadiya613@gmail.com" class="contact-link">Rishivagadiya613@gmail.com</a></p>
-        <p>📱 <a href="tel:+916352294215" class="contact-link">+91 6352294215</a></p>
-      </div>
+  <!-- ── FOOTER ── -->
+  <footer>
+    <p class="footer-logo">RISHI VAGADIYA</p>
+    <div class="footer-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 All Rights Reserved. Copyright by Rishi Vagadiya</p>
-    </div>
+    <p class="footer-copy">© 2024 — ALL RIGHTS RESERVED — RISHI VAGADIYA</p>
   </footer>
 
-  <!-- ==============================
-       AI CHATBOT WIDGET
-       ============================== -->
+  <!-- ── AI CHATBOT ── -->
   <div id="rishi-chatbot">
-    <!-- Toggle Button -->
-    <button id="chat-toggle" aria-label="Open AI Chat Assistant">
+    <button id="chat-toggle" aria-label="Open AI Chat">
       <span id="chat-badge">1</span>
-      <!-- Chat icon -->
-      <svg id="icon-chat" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
     </button>
-
-    <!-- Chat Window -->
-    <div id="chat-window" role="dialog" aria-label="Rishi's AI Assistant">
-      <!-- Header -->
+    <div id="chat-window" role="dialog">
       <div id="chat-header">
         <div id="chat-avatar">🎮</div>
         <div id="chat-header-info">
-          <h4>Rishi's AI Assistant</h4>
-          <p><span class="status-dot"></span>Online — Ask me anything!</p>
+          <h4>RISHI'S AI ASSISTANT</h4>
+          <p><span class="status-dot"></span>ONLINE — ASK ANYTHING</p>
         </div>
       </div>
-
-      <!-- Messages -->
       <div id="chat-messages"></div>
-
-      <!-- Quick replies -->
       <div id="quick-replies">
-        <button class="q-btn" onclick="sendQuick('What are your skills?')">💡 Skills</button>
-        <button class="q-btn" onclick="sendQuick('Show me your projects')">🎮 Projects</button>
-        <button class="q-btn" onclick="sendQuick('Are you available to hire?')">💼 Hire?</button>
-        <button class="q-btn" onclick="sendQuick('How can I contact you?')">📬 Contact</button>
+        <button class="q-btn" onclick="sendQuick('What are your skills?')">Skills</button>
+        <button class="q-btn" onclick="sendQuick('Show me your projects')">Projects</button>
+        <button class="q-btn" onclick="sendQuick('Are you available to hire?')">Hire?</button>
+        <button class="q-btn" onclick="sendQuick('How to contact you?')">Contact</button>
       </div>
-
-      <!-- Input -->
       <div id="chat-input-area">
         <textarea id="chat-input" placeholder="Ask about Rishi..." rows="1"
-          onkeydown="chatHandleKey(event)" oninput="chatAutoResize(this)"></textarea>
-        <button id="chat-send" onclick="chatSend()" aria-label="Send message">
+          onkeydown="chatKey(event)" oninput="chatResize(this)"></textarea>
+        <button id="chat-send" onclick="chatSend()">
           <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
     </div>
   </div>
-  <!-- ============================== -->
 
-  <!-- Particle.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
+  <!-- THREE.JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- Theme Toggle Script -->
   <script>
-    const toggleButton = document.getElementById('theme-toggle');
-    const themeIcon = toggleButton.querySelector('.theme-icon');
-    const body = document.body;
+  // ═══════════════════════════════════════
+  // CUSTOM CURSOR
+  // ═══════════════════════════════════════
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
 
-    function enableDarkMode() {
-      body.classList.add('dark-mode');
-      body.classList.remove('light-mode');
-      themeIcon.textContent = '🔆';
-      localStorage.setItem('theme', 'dark');
-    }
-    function enableLightMode() {
-      body.classList.add('light-mode');
-      body.classList.remove('dark-mode');
-      themeIcon.textContent = '🌙';
-      localStorage.setItem('theme', 'light');
-    }
-    toggleButton.addEventListener('click', () => {
-      body.classList.contains('dark-mode') ? enableLightMode() : enableDarkMode();
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateCursor() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    cursorRing.style.left = rx + 'px';
+    cursorRing.style.top = ry + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // ═══════════════════════════════════════
+  // THREE.JS — BACKGROUND PARTICLES SCENE
+  // ═══════════════════════════════════════
+  const canvas3D = document.getElementById('three-canvas');
+  const bgRenderer = new THREE.WebGLRenderer({ canvas: canvas3D, antialias: false, alpha: true });
+  bgRenderer.setPixelRatio(1);
+  bgRenderer.setSize(window.innerWidth, window.innerHeight);
+  bgRenderer.setClearColor(0x000000, 0);
+
+  const bgScene = new THREE.Scene();
+  const bgCam = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  bgCam.position.set(0, 0, 18);
+
+  // Mouse tracking for 3D
+  let mouse3D = { x: 0, y: 0 };
+  document.addEventListener('mousemove', e => {
+    mouse3D.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouse3D.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // ── BACKGROUND PARTICLES ──
+  const particleCount = 1800;
+  const pGeo = new THREE.BufferGeometry();
+  const pPositions = new Float32Array(particleCount * 3);
+  const pOriginals = new Float32Array(particleCount * 3);
+  const pColors = new Float32Array(particleCount * 3);
+
+  for (let i = 0; i < particleCount; i++) {
+    const i3 = i * 3;
+    const x = (Math.random() - 0.5) * 70;
+    const y = (Math.random() - 0.5) * 45;
+    const z = (Math.random() - 0.5) * 25;
+    pPositions[i3] = x; pPositions[i3+1] = y; pPositions[i3+2] = z;
+    pOriginals[i3] = x; pOriginals[i3+1] = y; pOriginals[i3+2] = z;
+    const t = Math.random();
+    if (t < 0.5) { pColors[i3]=0; pColors[i3+1]=1; pColors[i3+2]=0.97; }
+    else if (t < 0.8) { pColors[i3]=0.75; pColors[i3+1]=0; pColors[i3+2]=1; }
+    else { pColors[i3]=1; pColors[i3+1]=0; pColors[i3+2]=0.67; }
+  }
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+  pGeo.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+  const pMat = new THREE.PointsMaterial({ size: 0.1, vertexColors: true, transparent: true, opacity: 0.6 });
+  const bgParticles = new THREE.Points(pGeo, pMat);
+  bgScene.add(bgParticles);
+
+  // Grid
+  const gridHelper = new THREE.GridHelper(80, 50, 0x00fff7, 0x00fff7);
+  gridHelper.material.opacity = 0.04;
+  gridHelper.material.transparent = true;
+  gridHelper.position.y = -18;
+  bgScene.add(gridHelper);
+
+  // ═══════════════════════════════════════
+  // THREE.JS — HERO 3D OBJECT (right side)
+  // ═══════════════════════════════════════
+  const heroCanvas = document.getElementById('hero-3d-canvas');
+  const heroRenderer = new THREE.WebGLRenderer({ canvas: heroCanvas, antialias: true, alpha: true });
+  heroRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  heroRenderer.setClearColor(0x000000, 0);
+
+  const heroScene = new THREE.Scene();
+  const heroCam = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+  heroCam.position.z = 9;
+
+  // Resize hero canvas
+  function resizeHeroCanvas() {
+    const el = heroCanvas.parentElement;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    heroRenderer.setSize(w, h);
+    heroCam.aspect = w / h;
+    heroCam.updateProjectionMatrix();
+  }
+  resizeHeroCanvas();
+
+  // Main dodecahedron
+  const heroGeo = new THREE.DodecahedronGeometry(2.8, 0);
+  const heroMat = new THREE.MeshStandardMaterial({
+    color: 0x00fff7, emissive: 0x00fff7, emissiveIntensity: 0.4,
+    wireframe: true, transparent: true, opacity: 0.7,
+  });
+  const heroMesh = new THREE.Mesh(heroGeo, heroMat);
+  heroScene.add(heroMesh);
+
+  // Inner icosahedron
+  const innerGeo = new THREE.IcosahedronGeometry(1.6, 1);
+  const innerMat = new THREE.MeshStandardMaterial({
+    color: 0xbf00ff, emissive: 0xbf00ff, emissiveIntensity: 0.6,
+    wireframe: true, transparent: true, opacity: 0.5,
+  });
+  const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+  heroScene.add(innerMesh);
+
+  // Orbit ring 1
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(4.2, 0.05, 8, 80),
+    new THREE.MeshStandardMaterial({ color: 0x00fff7, emissive: 0x00fff7, emissiveIntensity: 1.5, transparent: true, opacity: 0.6 })
+  );
+  ring.rotation.x = Math.PI / 3;
+  heroScene.add(ring);
+
+  // Orbit ring 2
+  const ring2 = new THREE.Mesh(
+    new THREE.TorusGeometry(5.2, 0.03, 8, 80),
+    new THREE.MeshStandardMaterial({ color: 0xbf00ff, emissive: 0xbf00ff, emissiveIntensity: 1.5, transparent: true, opacity: 0.4 })
+  );
+  ring2.rotation.z = Math.PI / 4;
+  heroScene.add(ring2);
+
+  // Floating cubes around hero
+  const floatCubes = [];
+  for (let i = 0; i < 6; i++) {
+    const s = Math.random() * 0.25 + 0.1;
+    const mat = new THREE.MeshStandardMaterial({ color: i%2===0?0x00fff7:0xbf00ff, emissive: i%2===0?0x00fff7:0xbf00ff, emissiveIntensity: 1, wireframe: true });
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(s,s,s), mat);
+    const angle = (i / 6) * Math.PI * 2;
+    cube.userData = { angle, speed: 0.006 + Math.random()*0.008, vOff: Math.random()*Math.PI*2 };
+    heroScene.add(cube);
+    floatCubes.push(cube);
+  }
+
+  // Hero lights
+  heroScene.add(new THREE.AmbientLight(0xffffff, 0.3));
+  const hLight1 = new THREE.PointLight(0x00fff7, 4, 25);
+  hLight1.position.set(4, 4, 4);
+  heroScene.add(hLight1);
+  const hLight2 = new THREE.PointLight(0xbf00ff, 3, 25);
+  hLight2.position.set(-4, -4, 4);
+  heroScene.add(hLight2);
+  const hLight3 = new THREE.PointLight(0xff00aa, 2, 20);
+  hLight3.position.set(0, 0, 6);
+  heroScene.add(hLight3);
+
+  // ═══════════════════════════════════════
+  // MAIN ANIMATION LOOP
+  // ═══════════════════════════════════════
+  let t3D = 0;
+  function animate3D() {
+    requestAnimationFrame(animate3D);
+    t3D += 0.008;
+
+    // ── Hero object follows mouse ──
+    heroMesh.rotation.x += (mouse3D.y * 0.8 - heroMesh.rotation.x) * 0.05;
+    heroMesh.rotation.y += (mouse3D.x * 0.8 - heroMesh.rotation.y) * 0.05;
+    heroMesh.rotation.z += 0.003;
+    innerMesh.rotation.x -= 0.007;
+    innerMesh.rotation.y += 0.01;
+    ring.rotation.y += 0.006;
+    ring2.rotation.x += 0.004;
+
+    floatCubes.forEach((c, i) => {
+      c.userData.angle += c.userData.speed;
+      c.position.x = Math.cos(c.userData.angle) * 5.5;
+      c.position.y = Math.sin(c.userData.angle * 0.7 + c.userData.vOff) * 2.5;
+      c.position.z = Math.sin(c.userData.angle) * 2;
+      c.rotation.x += 0.025;
+      c.rotation.y += 0.02;
     });
-    window.addEventListener('DOMContentLoaded', () => {
-      localStorage.getItem('theme') === 'light' ? enableLightMode() : enableDarkMode();
-    });
-  </script>
 
-  <!-- Chatbot Script -->
-  <script>
-    // ========================================================
-    // CONFIGURATION — Update BACKEND_URL after deploying API
-    // ========================================================
-    const CHAT_BACKEND_URL = '/api/chat';
-    // ^ Deploy api/chat.js to Vercel and paste your URL above!
-    // ========================================================
+    hLight1.intensity = 4 + Math.sin(t3D * 2) * 0.8;
+    hLight2.intensity = 3 + Math.cos(t3D * 1.7) * 0.6;
 
-    let chatHistory = [];
-    let chatIsOpen = false;
+    heroRenderer.render(heroScene, heroCam);
 
-    const chatWindow  = document.getElementById('chat-window');
-    const chatToggle  = document.getElementById('chat-toggle');
-    const chatBadge   = document.getElementById('chat-badge');
-    const chatMsgs    = document.getElementById('chat-messages');
-
-    function toggleChat() {
-      chatIsOpen = !chatIsOpen;
-      chatWindow.classList.toggle('open', chatIsOpen);
-      chatToggle.classList.toggle('open', chatIsOpen);
-      if (chatIsOpen) {
-        chatBadge.style.display = 'none';
-        if (chatHistory.length === 0) {
-          setTimeout(() => addMsg('bot', "👋 Hi! I'm Rishi's AI assistant. I can tell you about his Unity 3D projects, C# skills, availability for hire, and more. What would you like to know?"), 300);
-        }
-        document.getElementById('chat-input').focus();
+    // ── Background particles react to mouse ──
+    const pos = pGeo.attributes.position.array;
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      const ox = pOriginals[i3], oy = pOriginals[i3+1];
+      const dx = mouse3D.x * 22 - ox;
+      const dy = mouse3D.y * 14 - oy;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      const R = 7;
+      if (dist < R) {
+        const f = (R - dist) / R;
+        pos[i3]   = ox - dx / dist * f * 3;
+        pos[i3+1] = oy - dy / dist * f * 3;
+      } else {
+        pos[i3]   += (ox - pos[i3])   * 0.05;
+        pos[i3+1] += (oy - pos[i3+1]) * 0.05;
       }
     }
+    pGeo.attributes.position.needsUpdate = true;
+    bgRenderer.render(bgScene, bgCam);
+  }
+  animate3D();
 
-    chatToggle.addEventListener('click', toggleChat);
+  // Resize
+  window.addEventListener('resize', () => {
+    bgCam.aspect = window.innerWidth / window.innerHeight;
+    bgCam.updateProjectionMatrix();
+    bgRenderer.setSize(window.innerWidth, window.innerHeight);
+    resizeHeroCanvas();
+  });
 
-    function getTime() {
-      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  // ── MINI CANVAS (project cards) ──
+  document.querySelectorAll('.mini-canvas').forEach(c => {
+    const type = c.dataset.type;
+    const r = new THREE.WebGLRenderer({ canvas: c, antialias: true, alpha: true });
+    r.setPixelRatio(window.devicePixelRatio);
+    r.setClearColor(0x000000, 0);
+
+    const s = new THREE.Scene();
+    const cam = new THREE.PerspectiveCamera(60, c.offsetWidth / 200, 0.1, 100);
+    cam.position.z = 4;
+    s.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+    let color = type === 'crowwed' ? 0xff6600 : type === 'zombie' ? 0x00ff44 : 0x00ccff;
+    const pl = new THREE.PointLight(color, 3, 20);
+    pl.position.set(2, 2, 2);
+    s.add(pl);
+
+    let obj;
+    if (type === 'crowwed') {
+      obj = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
+    } else if (type === 'zombie') {
+      obj = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2, 0), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3, wireframe: true }));
+    } else {
+      obj = new THREE.Mesh(new THREE.TorusKnotGeometry(0.9, 0.3, 80, 12), new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.2, wireframe: true }));
     }
+    s.add(obj);
 
-    function addMsg(role, text) {
-      const div = document.createElement('div');
-      div.className = `msg ${role}`;
-      div.innerHTML = `${text}<span class="msg-time">${getTime()}</span>`;
-      chatMsgs.appendChild(div);
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    function ro() {
+      requestAnimationFrame(ro);
+      obj.rotation.x += 0.012;
+      obj.rotation.y += 0.016;
+      const w = c.offsetWidth, h = 200;
+      if (r.domElement.width !== w) {
+        r.setSize(w, h);
+        cam.aspect = w / h;
+        cam.updateProjectionMatrix();
+      }
+      r.render(s, cam);
     }
+    ro();
+  });
 
-    function showTyping() {
-      const div = document.createElement('div');
-      div.className = 'typing-bubble';
-      div.id = 'typing-indicator';
-      div.innerHTML = '<span></span><span></span><span></span>';
-      chatMsgs.appendChild(div);
-      chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }
-
-    function removeTyping() {
-      const el = document.getElementById('typing-indicator');
-      if (el) el.remove();
-    }
-
-    function chatHandleKey(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend(); }
-    }
-
-    function chatAutoResize(el) {
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 80) + 'px';
-    }
-
-    function sendQuick(text) {
-      document.getElementById('chat-input').value = text;
-      chatSend();
-    }
-
-    async function chatSend() {
-      const input   = document.getElementById('chat-input');
-      const sendBtn = document.getElementById('chat-send');
-      const message = input.value.trim();
-      if (!message) return;
-
-      input.value = '';
-      input.style.height = 'auto';
-      addMsg('user', message);
-      chatHistory.push({ role: 'user', content: message });
-
-      sendBtn.disabled = true;
-      showTyping();
-
-      try {
-        const res = await fetch(CHAT_BACKEND_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, history: chatHistory.slice(-8) })
+  // ═══════════════════════════════════════
+  // SCROLL REVEAL
+  // ═══════════════════════════════════════
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Animate skill bars
+        e.target.querySelectorAll('.skill-fill').forEach(bar => {
+          bar.style.width = bar.dataset.w;
         });
-
-        const data = await res.json();
-        removeTyping();
-
-        const reply = data.reply || data.error || 'Sorry, something went wrong!';
-        addMsg('bot', reply);
-        chatHistory.push({ role: 'assistant', content: reply });
-
-      } catch (err) {
-        removeTyping();
-        addMsg('bot', '⚠️ Could not connect to AI. Please check your backend URL in the code.');
       }
+    });
+  }, { threshold: 0.15 });
 
-      sendBtn.disabled = false;
-      input.focus();
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  // Also observe skills section directly
+  const skillsSection = document.getElementById('skills');
+  if (skillsSection) {
+    const skillIO = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.skill-fill').forEach(bar => {
+            bar.style.width = bar.dataset.w;
+          });
+        }
+      });
+    }, { threshold: 0.1 });
+    skillIO.observe(skillsSection);
+  }
+
+  // ═══════════════════════════════════════
+  // THEME TOGGLE
+  // ═══════════════════════════════════════
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    themeBtn.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    localStorage.setItem('rvTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+  });
+  if (localStorage.getItem('rvTheme') === 'light') {
+    document.body.classList.add('light-mode');
+    themeBtn.textContent = '🌙';
+  }
+
+  // ═══════════════════════════════════════
+  // CHATBOT
+  // ═══════════════════════════════════════
+  const CHAT_URL = '/api/chat';
+  let chatHistory = [], chatOpen = false;
+
+  const chatWindow = document.getElementById('chat-window');
+  const chatToggle = document.getElementById('chat-toggle');
+  const chatBadge = document.getElementById('chat-badge');
+  const chatMsgs = document.getElementById('chat-messages');
+
+  function toggleChat() {
+    chatOpen = !chatOpen;
+    chatWindow.classList.toggle('open', chatOpen);
+    chatToggle.classList.toggle('open', chatOpen);
+    if (chatOpen) {
+      chatBadge.style.display = 'none';
+      if (chatHistory.length === 0) {
+        setTimeout(() => addMsg('bot', "👾 Hey! I'm Rishi's AI. Ask me about his Unity 3D projects, C# skills, or availability to hire!"), 300);
+      }
+      document.getElementById('chat-input').focus();
     }
+  }
+
+  chatToggle.addEventListener('click', toggleChat);
+
+  function getTime() { return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+
+  function addMsg(role, text) {
+    const d = document.createElement('div');
+    d.className = `msg ${role}`;
+    d.innerHTML = `${text}<span class="msg-time">${getTime()}</span>`;
+    chatMsgs.appendChild(d);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+
+  function showTyping() {
+    const d = document.createElement('div');
+    d.className = 'typing-bubble'; d.id = 'typing-ind';
+    d.innerHTML = '<span></span><span></span><span></span>';
+    chatMsgs.appendChild(d);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+  }
+  function removeTyping() { const e = document.getElementById('typing-ind'); if(e) e.remove(); }
+
+  function chatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); chatSend(); } }
+  function chatResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 80) + 'px'; }
+  function sendQuick(t) { document.getElementById('chat-input').value = t; chatSend(); }
+
+  async function chatSend() {
+    const input = document.getElementById('chat-input');
+    const btn = document.getElementById('chat-send');
+    const message = input.value.trim();
+    if (!message) return;
+    input.value = ''; input.style.height = 'auto';
+    addMsg('user', message);
+    chatHistory.push({ role: 'user', content: message });
+    btn.disabled = true; showTyping();
+    try {
+      const res = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message, history: chatHistory.slice(-8) })
+      });
+      const data = await res.json();
+      removeTyping();
+      const reply = data.reply || 'Something went wrong!';
+      addMsg('bot', reply);
+      chatHistory.push({ role: 'assistant', content: reply });
+    } catch {
+      removeTyping();
+      addMsg('bot', '⚠️ Cannot connect to AI backend.');
+    }
+    btn.disabled = false;
+    input.focus();
+  }
+
+  // ═══════════════════════════════════════
+  // MOBILE MENU
+  // ═══════════════════════════════════════
+  document.getElementById('menu-toggle').addEventListener('click', () => {
+    const existing = document.getElementById('mobile-menu-overlay');
+    if (existing) { existing.remove(); return; }
+    const overlay = document.createElement('div');
+    overlay.id = 'mobile-menu-overlay';
+    overlay.style.cssText = `position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(3,3,8,0.97);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;`;
+    ['About','Projects','Skills','Contact'].forEach(name => {
+      const a = document.createElement('a');
+      a.href = '#' + name.toLowerCase();
+      a.textContent = name;
+      a.style.cssText = `font-family:'Orbitron',monospace;font-size:24px;color:#00fff7;text-decoration:none;letter-spacing:4px;`;
+      a.addEventListener('click', () => overlay.remove());
+      overlay.appendChild(a);
+    });
+    overlay.addEventListener('click', e => { if(e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  });
   </script>
 
   <script src="script.js"></script>
